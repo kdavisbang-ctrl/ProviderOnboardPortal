@@ -137,7 +137,9 @@ function IdentitySection({ data, set }) {
 
 // ─── Credentials (DEA + state licenses) ────────────
 function CredentialsSection({ data, set }) {
-  const c = data.credentials;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.credentials;
+  const c = { ...raw, dea: s(raw.dea), deaExp: s(raw.deaExp), boardCert: s(raw.boardCert), boardYear: s(raw.boardYear) };
   const upd = (k, v) => set("credentials", { ...c, [k]: v });
 
   const addLicense = () => upd("licenses", [...c.licenses, { state: "", number: "", expires: "" }]);
@@ -215,7 +217,9 @@ function CredentialsSection({ data, set }) {
 
 // ─── Malpractice ───────────────────────────────────
 function MalpracticeSection({ data, set }) {
-  const m = data.malpractice;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.malpractice;
+  const m = { ...raw, carrier: s(raw.carrier), policyNumber: s(raw.policyNumber), perOccurrence: s(raw.perOccurrence), aggregate: s(raw.aggregate), effective: s(raw.effective), expires: s(raw.expires), fileName: s(raw.fileName), fileSize: s(raw.fileSize) };
   const upd = (k, v) => set("malpractice", { ...m, [k]: v });
   const fakeUpload = () => upd("fileName", "Malpractice_COI_2025.pdf") || set("malpractice", { ...m, fileName: "Malpractice_COI_2025.pdf", fileSize: "412 KB" });
 

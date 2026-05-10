@@ -2,7 +2,9 @@
 
 // ─── Compounding preferences ───────────────────────
 function CompoundingSection({ data, set }) {
-  const c = data.compounding;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.compounding;
+  const c = { ...raw, notes: s(raw.notes) };
   const upd = (k, v) => set("compounding", { ...c, [k]: v });
 
   return (
@@ -78,7 +80,9 @@ function CompoundingSection({ data, set }) {
 
 // ─── Patient population ────────────────────────────
 function PatientSection({ data, set }) {
-  const p = data.patient;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.patient;
+  const p = { ...raw, avgPatients: s(raw.avgPatients), monthlyRx: s(raw.monthlyRx), rushPercent: s(raw.rushPercent), cashPay: s(raw.cashPay), insurancePay: s(raw.insurancePay) };
   const upd = (k, v) => set("patient", { ...p, [k]: v });
   return (
     <>
@@ -264,7 +268,9 @@ function BillingSection({ data, set }) {
 
 // ─── EHR ───────────────────────────────────────────
 function EhrSection({ data, set }) {
-  const e = data.ehr;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.ehr;
+  const e = { ...raw, system: s(raw.system), surescriptsId: s(raw.surescriptsId), eFax: s(raw.eFax) };
   const upd = (k, v) => set("ehr", { ...e, [k]: v });
   return (
     <>

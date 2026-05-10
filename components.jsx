@@ -35,8 +35,9 @@ function Input({ value, onChange, mono, ...rest }) {
 }
 
 function Select({ value, onChange, options, placeholder, ...rest }) {
+  const safeVal = (value == null || typeof value === 'object') ? '' : value;
   return (
-    <select className="select" value={value || ""} onChange={(e) => onChange(e.target.value)} {...rest}>
+    <select className="select" value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest}>
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((o) => typeof o === "string" ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -44,7 +45,8 @@ function Select({ value, onChange, options, placeholder, ...rest }) {
 }
 
 function Textarea({ value, onChange, ...rest }) {
-  return <textarea className="textarea" value={value || ""} onChange={(e) => onChange(e.target.value)} {...rest} />;
+  const safeVal = (value == null || typeof value === 'object') ? '' : value;
+  return <textarea className="textarea" value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest} />;
 }
 
 function Chip({ on, onClick, children }) {
