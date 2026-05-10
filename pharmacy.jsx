@@ -188,7 +188,7 @@ function PharmacyDashboard({ onOpenApp }) {
                 <div style={{ fontWeight: 500, fontSize: 13.5 }}>{name}</div>
                 <div className="pharm-sub" style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 1 }}>{id.email || '—'}</div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{practice}</div>
+              <div className="pharm-practice" style={{ fontSize: 13, color: 'var(--ink-2)' }}>{practice}</div>
               <div className="pharm-date" style={{ fontSize: 12.5, color: 'var(--ink-3)' }}>{submitted}</div>
               <div className="pharm-status"><AppStatusBadge status={app.status} /></div>
               <div className="pharm-action" style={{ color: 'var(--ink-4)' }}><Ic.arrow /></div>
@@ -295,7 +295,7 @@ function PharmacyReview({ app, user, onBack, onAppUpdated }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+          <div className="pharm-review-actions" style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
             {app.status === 'submitted' && (
               <button className="btn btn--ghost btn--sm" onClick={startReview}>Mark as in review</button>
             )}
@@ -314,6 +314,17 @@ function PharmacyReview({ app, user, onBack, onAppUpdated }) {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Mobile section selector — hidden on desktop via CSS */}
+      <div className="pharm-mobile-nav">
+        <select value={activeSection} onChange={e => { setActiveSection(e.target.value); setDraft(null); }}>
+          {SECTIONS.map(sec => {
+            const rev = reviews[sec.id];
+            const indicator = rev?.status === 'approved' ? ' ✓' : rev?.status ? ' !' : '';
+            return <option key={sec.id} value={sec.id}>{sec.num}. {sec.title}{indicator}</option>;
+          })}
+        </select>
       </div>
 
       <div className="detail">
