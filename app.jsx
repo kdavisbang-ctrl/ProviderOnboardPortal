@@ -194,7 +194,10 @@ function App() {
       setDbId(row.id);
       setOnboardingId(row.onboarding_id);
       setAppStatus(row.status || 'draft');
-      setData(dbToData(row));
+      const cleanData = dbToData(row);
+      setData(cleanData);
+      // Self-heal: write sanitized data back to purge any corrupt objects stored in DB
+      await window.sb.from('provider_onboardings').update(dataToDb(cleanData)).eq('id', row.id);
 
       // Load section reviews so provider can see pharmacy feedback
       const { data: reviews } = await window.sb
@@ -228,7 +231,7 @@ function App() {
     return () => clearTimeout(saveTimer.current);
   }, [data]);
 
-  const set = (key, value) => setData(d => ({ ...d, [key]: value }));
+  const set = (key, value) => setData(d => ({ ...d, [key]: typeof value === 'function' ? value(d[key]) : value }));
 
   const goHub     = () => setRoute('hub');
   const goSection = (id) => { setRoute(id); window.scrollTo({ top: 0, behavior: 'instant' }); };

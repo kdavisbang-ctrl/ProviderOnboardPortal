@@ -5,7 +5,7 @@ function CompoundingSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.compounding;
   const c = { ...raw, notes: s(raw.notes) };
-  const upd = (k, v) => set("compounding", { ...c, [k]: v });
+  const upd = (k, v) => set("compounding", curr => ({ ...curr, [k]: v }));
 
   return (
     <>
@@ -83,7 +83,7 @@ function PatientSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.patient;
   const p = { ...raw, avgPatients: s(raw.avgPatients), monthlyRx: s(raw.monthlyRx), rushPercent: s(raw.rushPercent), cashPay: s(raw.cashPay), insurancePay: s(raw.insurancePay) };
-  const upd = (k, v) => set("patient", { ...p, [k]: v });
+  const upd = (k, v) => set("patient", curr => ({ ...curr, [k]: v }));
   return (
     <>
       <div className="subsec">
@@ -130,19 +130,15 @@ function PatientSection({ data, set }) {
 function ShippingSection({ data, set }) {
   const s = data.shipping;
 
-  const setAll = (next) => set("shipping", next);
-  const add = () => setAll([...s, { label: "", name: "", attn: "", street: "", city: "", state: "", zip: "", hours: "", primary: s.length === 0 }]);
-  const upd = (i, k, v) => {
-    const next = [...s];
-    next[i] = { ...next[i], [k]: v };
-    setAll(next);
-  };
-  const del = (i) => {
-    const next = s.filter((_, ix) => ix !== i);
+  const setAll = (fn) => set("shipping", fn);
+  const add = () => setAll(curr => [...curr, { label: "", name: "", attn: "", street: "", city: "", state: "", zip: "", hours: "", primary: curr.length === 0 }]);
+  const upd = (i, k, v) => setAll(curr => { const next = [...curr]; next[i] = { ...next[i], [k]: v }; return next; });
+  const del = (i) => setAll(curr => {
+    const next = curr.filter((_, ix) => ix !== i);
     if (!next.some((x) => x.primary) && next[0]) next[0].primary = true;
-    setAll(next);
-  };
-  const makePrimary = (i) => setAll(s.map((x, ix) => ({ ...x, primary: ix === i })));
+    return next;
+  });
+  const makePrimary = (i) => setAll(curr => curr.map((x, ix) => ({ ...x, primary: ix === i })));
 
   const [editing, setEditing] = React.useState(null);
 
@@ -160,7 +156,7 @@ function ShippingSection({ data, set }) {
         )}
 
         {s.map((loc, i) => editing === i ? (
-          <ShipForm key={i} value={loc} onSave={(v) => { upd(i, "label", v.label); ["name","attn","street","city","state","zip","hours"].forEach(k => upd(i, k, v[k])); setEditing(null); }} onCancel={() => setEditing(null)} />
+          <ShipForm key={i} value={loc} onSave={(v) => { setAll(curr => { const next = [...curr]; next[i] = { ...next[i], ...v }; return next; }); setEditing(null); }} onCancel={() => setEditing(null)} />
         ) : (
           <div key={i} className={"ship-card" + (loc.primary ? " primary" : "")}>
             <div>
@@ -223,7 +219,7 @@ function BillingSection({ data, set }) {
   const raw = data.billing;
   const s = (v) => typeof v === 'string' ? v : '';
   const b = { ...raw, method: s(raw.method), accountName: s(raw.accountName), routing: s(raw.routing), accountLast4: s(raw.accountLast4), statementEmail: s(raw.statementEmail), netTerms: s(raw.netTerms) };
-  const upd = (k, v) => set("billing", { ...b, [k]: v });
+  const upd = (k, v) => set("billing", curr => ({ ...curr, [k]: v }));
   return (
     <>
       <div className="subsec">
@@ -271,7 +267,7 @@ function EhrSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.ehr;
   const e = { ...raw, system: s(raw.system), surescriptsId: s(raw.surescriptsId), eFax: s(raw.eFax) };
-  const upd = (k, v) => set("ehr", { ...e, [k]: v });
+  const upd = (k, v) => set("ehr", curr => ({ ...curr, [k]: v }));
   return (
     <>
       <div className="subsec">
@@ -340,7 +336,7 @@ function StaffSection({ data, set }) {
                 <div className="role">{m.role}</div>
                 <div style={{ color: "var(--ink-2)" }}>{m.email}</div>
                 <div><Badge kind={accessBadge(m.access)}>{m.access}</Badge></div>
-                <div><button className="del" onClick={() => setAll(list.filter((_, ix) => ix !== i))}><Ic.trash /></button></div>
+                <div><button className="del" onClick={() => set("staff", curr => curr.filter((_, ix) => ix !== i))}><Ic.trash /></button></div>
               </div>
             ))}
           </div>
@@ -371,7 +367,7 @@ function StaffSection({ data, set }) {
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 16, justifyContent: "flex-end" }}>
               <button className="btn btn--ghost" onClick={() => { setOpen(false); setDraft({ name: "", role: "", email: "", access: "Order entry" }); }}>Cancel</button>
-              <button className="btn btn--brand" disabled={!draft.name || !draft.email} onClick={() => { setAll([...list, draft]); setOpen(false); setDraft({ name: "", role: "", email: "", access: "Order entry" }); }}>Send invitation</button>
+              <button className="btn btn--brand" disabled={!draft.name || !draft.email} onClick={() => { set("staff", curr => [...curr, draft]); setOpen(false); setDraft({ name: "", role: "", email: "", access: "Order entry" }); }}>Send invitation</button>
             </div>
           </div>
         )}
@@ -390,7 +386,7 @@ function StaffSection({ data, set }) {
 // ─── Attestation ───────────────────────────────────
 function AttestSection({ data, set }) {
   const a = data.attestations;
-  const upd = (k, v) => set("attestations", { ...a, [k]: v });
+  const upd = (k, v) => set("attestations", curr => ({ ...curr, [k]: v }));
   const padRef = React.useRef(null);
 
   // Simple "scribble" signature — track pointer paths

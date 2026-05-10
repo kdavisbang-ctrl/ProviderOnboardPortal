@@ -27,36 +27,36 @@ function IdentitySection({ data, set }) {
       const tax = r.taxonomies?.find(t => t.primary) || r.taxonomies?.[0];
       const addr = r.addresses?.find(a => a.address_purpose === 'LOCATION') || r.addresses?.[0];
       const str = (v) => typeof v === 'string' ? v : '';
-      set("identity", {
-        ...id,
+      set("identity", curr => ({
+        ...curr,
         npiVerified: true,
-        firstName: str(id.firstName) || str(b.first_name),
-        lastName:  str(id.lastName)  || str(b.last_name),
-        credentials: str(id.credentials) || str(b.credential),
+        firstName: str(curr.firstName) || str(b.first_name),
+        lastName:  str(curr.lastName)  || str(b.last_name),
+        credentials: str(curr.credentials) || str(b.credential),
         npiResult: {
           name: [b.first_name, b.middle_name, b.last_name, b.credential].filter(Boolean).join(' '),
           taxonomy: tax ? `${tax.desc} (${tax.code})` : '',
           enumDate: b.enumeration_date || '',
           address: addr ? [addr.address_1, addr.address_2, `${addr.city}, ${addr.state} ${addr.postal_code?.slice(0,5)}`].filter(Boolean).join(', ') : '',
         },
-      });
+      }));
     } catch {
       // CORS blocked (GitHub Pages) — use demo data
-      set("identity", {
-        ...id, npiVerified: true,
+      set("identity", curr => ({
+        ...curr, npiVerified: true,
         npiResult: {
           name: 'Demo Provider MD',
           taxonomy: 'Family Medicine (207Q00000X)',
           enumDate: '2010-01-15',
           address: '123 Demo St, Watkinsville, GA 30677',
         },
-      });
+      }));
     }
     setLookingUp(false);
   };
 
-  const upd = (k, v) => set("identity", { ...id, [k]: v });
-  const updP = (k, v) => set("identity", { ...id, practice: { ...id.practice, [k]: v } });
+  const upd = (k, v) => set("identity", curr => ({ ...curr, [k]: v }));
+  const updP = (k, v) => set("identity", curr => ({ ...curr, practice: { ...(curr.practice || {}), [k]: v } }));
 
   return (
     <>
@@ -140,7 +140,7 @@ function CredentialsSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.credentials;
   const c = { ...raw, dea: s(raw.dea), deaExp: s(raw.deaExp), boardCert: s(raw.boardCert), boardYear: s(raw.boardYear) };
-  const upd = (k, v) => set("credentials", { ...c, [k]: v });
+  const upd = (k, v) => set("credentials", curr => ({ ...curr, [k]: v }));
 
   const addLicense = () => upd("licenses", [...c.licenses, { state: "", number: "", expires: "" }]);
   const updLic = (i, k, v) => {
@@ -220,8 +220,7 @@ function MalpracticeSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.malpractice;
   const m = { ...raw, carrier: s(raw.carrier), policyNumber: s(raw.policyNumber), perOccurrence: s(raw.perOccurrence), aggregate: s(raw.aggregate), effective: s(raw.effective), expires: s(raw.expires), fileName: s(raw.fileName), fileSize: s(raw.fileSize) };
-  const upd = (k, v) => set("malpractice", { ...m, [k]: v });
-  const fakeUpload = () => upd("fileName", "Malpractice_COI_2025.pdf") || set("malpractice", { ...m, fileName: "Malpractice_COI_2025.pdf", fileSize: "412 KB" });
+  const upd = (k, v) => set("malpractice", curr => ({ ...curr, [k]: v }));
 
   return (
     <>
@@ -269,8 +268,8 @@ function MalpracticeSection({ data, set }) {
           fileSize={m.fileSize}
           label="Drag & drop or click to upload"
           sub="PDF, PNG, or JPG · max 10 MB"
-          onUpload={() => set("malpractice", { ...m, fileName: "Malpractice_COI_2025.pdf", fileSize: "412 KB" })}
-          onClear={() => set("malpractice", { ...m, fileName: "", fileSize: "" })}
+          onUpload={() => set("malpractice", curr => ({ ...curr, fileName: "Malpractice_COI_2025.pdf", fileSize: "412 KB" }))}
+          onClear={() => set("malpractice", curr => ({ ...curr, fileName: "", fileSize: "" }))}
         />
       </div>
     </>
