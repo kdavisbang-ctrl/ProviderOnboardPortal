@@ -17,10 +17,9 @@ function RoleSelectScreen({ user, onRole }) {
       <div style={{ width: 580, padding: '0 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 44, color: 'var(--brand)' }}>
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path d="M5 26 L13 7 L16 13.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M27 7 L19 26" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M8.5 19.5 L18.5 19.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
-            <path d="M26 9.5 C29.5 9.5 31 12 31 15.5 C31 19 29.5 22 26 22.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none"/>
+            <path d="M2 28 L13 3 L22 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7 18 L18 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M30 10 A 9.2 9.2 0 1 0 30 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
           </svg>
           <div style={{ fontFamily: 'var(--sans)', fontSize: 17, fontWeight: 600, letterSpacing: '0.01em', color: 'var(--brand)' }}>
             ATHENA <span style={{ fontWeight: 400, color: 'var(--ink-3)', letterSpacing: '0.12em', fontSize: 12 }}>COMPOUNDING</span>
