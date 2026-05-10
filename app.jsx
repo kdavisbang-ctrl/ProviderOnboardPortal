@@ -35,6 +35,10 @@ function dbToData(row) {
   const e = EMPTY_DATA;
   const identity = { ...clone(e.identity), ...(row.identity_data || {}) };
   identity.practice = { ...clone(e.identity.practice), ...(identity.practice || {}) };
+  // Coerce identity string fields — guards against objects stored from older NPI lookup bugs
+  ['firstName', 'middleName', 'lastName', 'credentials', 'npi', 'email', 'phone'].forEach(k => {
+    if (typeof identity[k] !== 'string') identity[k] = '';
+  });
   const credentials = { ...clone(e.credentials), ...(row.credentials_data || {}) };
   if (!Array.isArray(credentials.licenses)) credentials.licenses = [];
   if (!Array.isArray(credentials.deaSchedules)) credentials.deaSchedules = [];

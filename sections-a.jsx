@@ -24,12 +24,13 @@ function IdentitySection({ data, set }) {
       const b = r.basic;
       const tax = r.taxonomies?.find(t => t.primary) || r.taxonomies?.[0];
       const addr = r.addresses?.find(a => a.address_purpose === 'LOCATION') || r.addresses?.[0];
+      const str = (v) => typeof v === 'string' ? v : '';
       set("identity", {
         ...id,
         npiVerified: true,
-        firstName: id.firstName || b.first_name || '',
-        lastName:  id.lastName  || b.last_name  || '',
-        credentials: id.credentials || b.credential || '',
+        firstName: str(id.firstName) || str(b.first_name),
+        lastName:  str(id.lastName)  || str(b.last_name),
+        credentials: str(id.credentials) || str(b.credential),
         npiResult: {
           name: [b.first_name, b.middle_name, b.last_name, b.credential].filter(Boolean).join(' '),
           taxonomy: tax ? `${tax.desc} (${tax.code})` : '',
