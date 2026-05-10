@@ -136,10 +136,10 @@ function LoginView({ onRegister }) {
         <AthenaBrand />
 
         <div style={{ fontFamily: 'var(--serif)', fontSize: 28, fontWeight: 400, letterSpacing: '-0.02em', marginBottom: 6 }}>
-          Sign in to your portal
+          Provider Onboarding Portal
         </div>
         <p style={{ color: 'var(--ink-3)', fontSize: 14, margin: '0 0 28px' }}>
-          Provider onboarding &amp; credentialing portal.
+          Sign in to manage your onboarding process
         </p>
 
         {/* Login form */}
