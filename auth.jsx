@@ -65,11 +65,9 @@ function AthenaBrand() {
 
 // ── Main AuthScreen ──────────────────────────────────────
 function AuthScreen() {
-  const [view, setView] = React.useState('login'); // 'login' | 'register' | 'check-email'
-  const [pendingEmail, setPendingEmail] = React.useState('');
+  const [view, setView] = React.useState('login'); // 'login' | 'register'
 
-  if (view === 'register') return <RegisterView onBack={() => setView('login')} onCheckEmail={(e) => { setPendingEmail(e); setView('check-email'); }} />;
-  if (view === 'check-email') return <CheckEmailView email={pendingEmail} onBack={() => setView('login')} />;
+  if (view === 'register') return <RegisterView onBack={() => setView('login')} />;
   return <LoginView onRegister={() => setView('register')} />;
 }
 
@@ -228,7 +226,7 @@ function TestCard({ acct, loading, disabled, onClick }) {
 }
 
 // ── Provider registration view ───────────────────────────
-function RegisterView({ onBack, onCheckEmail }) {
+function RegisterView({ onBack }) {
   const [step, setStep]       = React.useState('npi');  // 'npi' | 'details'
   const [npi, setNpi]         = React.useState('');
   const [npiResult, setNpiResult] = React.useState(null);
@@ -267,32 +265,34 @@ function RegisterView({ onBack, onCheckEmail }) {
     if (password.length < 8) { setSubmitError('Password must be at least 8 characters.'); return; }
 
     setSubmitting(true); setSubmitError('');
+
+    // Sign up (creates the user)
     const { data, error } = await window.sb.auth.signUp({ email, password });
     if (error) { setSubmitError(error.message); setSubmitting(false); return; }
 
-    if (data.user) {
-      // Create provider profile and seed identity data
-      await window.sb.from('profiles').insert({ id: data.user.id, role: 'provider' });
+    const userId = data.user?.id;
+    if (userId) {
+      // Seed profile and identity before signing in
+      await window.sb.from('profiles').insert({ id: userId, role: 'provider' });
       await window.sb.from('provider_onboardings').insert({
-        user_id: data.user.id,
+        user_id: userId,
         identity_data: {
           firstName, lastName,
           credentials: npiResult?.credential || '',
-          npi,
-          npiVerified: true,
-          npiResult,
-          email,
+          npi, npiVerified: true, npiResult, email,
           phone: '', middleName: '',
           practice: { name: '', type: '', tin: '', website: '', yearsInPractice: '' },
         },
       });
     }
 
-    setSubmitting(false);
-    if (!data.session) {
-      onCheckEmail(email);
+    // Sign in immediately — skips email confirmation entirely
+    const { error: signInErr } = await window.sb.auth.signInWithPassword({ email, password });
+    if (signInErr) {
+      // Supabase still blocking due to unconfirmed email — show clear message
+      setSubmitError('Account created but email confirmation is still required in Supabase. Go to Authentication → Providers → Email and disable "Confirm email".');
     }
-    // If session exists, app.jsx auth listener picks it up automatically
+    setSubmitting(false);
   };
 
   return (
@@ -410,32 +410,6 @@ function RegisterView({ onBack, onCheckEmail }) {
 }
 
 // ── Confirm email view ──────────────────────────────────
-function CheckEmailView({ email, onBack }) {
-  return (
-    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)', padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
-        <AthenaBrand />
-        <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--brand-soft)', display: 'grid', placeItems: 'center', margin: '0 auto 24px', color: 'var(--brand)' }}>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke="currentColor" strokeWidth="1.6"/>
-            <path d="M3 7l9 6.5L21 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-          </svg>
-        </div>
-        <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 400, marginBottom: 12 }}>Confirm your email</div>
-        <p style={{ color: 'var(--ink-3)', fontSize: 13.5, margin: '0 0 8px', lineHeight: 1.6 }}>
-          We sent a confirmation link to
-        </p>
-        <p style={{ color: 'var(--ink)', fontWeight: 600, fontSize: 14, margin: '0 0 24px' }}>{email}</p>
-        <p style={{ color: 'var(--ink-3)', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
-          Click the link in the email to activate your account, then sign in.
-        </p>
-        <button className="btn btn--ghost" style={{ margin: '0 auto' }} onClick={onBack}>
-          Back to sign in
-        </button>
-      </div>
-    </div>
-  );
-}
 
 // ── Icons ────────────────────────────────────────────────
 function ProviderIcon() {
