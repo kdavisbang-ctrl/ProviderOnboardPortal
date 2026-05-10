@@ -23,17 +23,30 @@ function clone(d) { return JSON.parse(JSON.stringify(d)); }
 
 function dbToData(row) {
   const e = EMPTY_DATA;
+  const identity = { ...clone(e.identity), ...(row.identity_data || {}) };
+  identity.practice = { ...clone(e.identity.practice), ...(identity.practice || {}) };
+  const credentials = { ...clone(e.credentials), ...(row.credentials_data || {}) };
+  if (!Array.isArray(credentials.licenses)) credentials.licenses = [];
+  if (!Array.isArray(credentials.deaSchedules)) credentials.deaSchedules = [];
+  if (!Array.isArray(credentials.csrStates)) credentials.csrStates = [];
+  const compounding = { ...clone(e.compounding), ...(row.compounding_data || {}) };
+  if (!Array.isArray(compounding.categories)) compounding.categories = [];
+  if (!Array.isArray(compounding.formulations)) compounding.formulations = [];
+  if (!Array.isArray(compounding.bases)) compounding.bases = [];
+  if (!Array.isArray(compounding.flavorPrefs)) compounding.flavorPrefs = [];
+  const patient = { ...clone(e.patient), ...(row.patient_data || {}) };
+  if (!Array.isArray(patient.populations)) patient.populations = [];
   return {
-    identity:     row.identity_data     || clone(e.identity),
-    credentials:  row.credentials_data  || clone(e.credentials),
-    malpractice:  row.malpractice_data  || clone(e.malpractice),
-    compounding:  row.compounding_data  || clone(e.compounding),
-    patient:      row.patient_data      || clone(e.patient),
-    shipping:     row.shipping_data     || clone(e.shipping),
-    billing:      row.billing_data      || clone(e.billing),
-    ehr:          row.ehr_data          || clone(e.ehr),
-    staff:        row.staff_data        || clone(e.staff),
-    attestations: row.attestations_data || clone(e.attestations),
+    identity,
+    credentials,
+    malpractice:  { ...clone(e.malpractice),  ...(row.malpractice_data  || {}) },
+    compounding,
+    patient,
+    shipping:     Array.isArray(row.shipping_data)     ? row.shipping_data     : clone(e.shipping),
+    billing:      { ...clone(e.billing),      ...(row.billing_data      || {}) },
+    ehr:          { ...clone(e.ehr),          ...(row.ehr_data          || {}) },
+    staff:        Array.isArray(row.staff_data)        ? row.staff_data        : clone(e.staff),
+    attestations: { ...clone(e.attestations), ...(row.attestations_data || {}) },
   };
 }
 

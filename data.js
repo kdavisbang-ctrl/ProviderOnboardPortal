@@ -151,9 +151,9 @@ window.SECTIONS = [
     blurb: "Legal name, NPI, contact, and the practice you bill under.",
     fields: 11,
     minutes: 3,
-    isComplete: (d) => !!(d.identity.firstName && d.identity.lastName && d.identity.npi && d.identity.npiVerified && d.identity.email && d.identity.practice.name),
+    isComplete: (d) => !!(d.identity?.firstName && d.identity?.lastName && d.identity?.npi && d.identity?.npiVerified && d.identity?.email && d.identity?.practice?.name),
     progress: (d) => {
-      const f = [d.identity.firstName, d.identity.lastName, d.identity.email, d.identity.phone, d.identity.npi, d.identity.practice.name, d.identity.practice.tin];
+      const f = [d.identity?.firstName, d.identity?.lastName, d.identity?.email, d.identity?.phone, d.identity?.npi, d.identity?.practice?.name, d.identity?.practice?.tin];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -164,9 +164,9 @@ window.SECTIONS = [
     blurb: "State medical licenses, DEA registration, and board certification.",
     fields: 8,
     minutes: 4,
-    isComplete: (d) => !!(d.credentials.dea && d.credentials.licenses.length > 0 && d.credentials.boardCert),
+    isComplete: (d) => !!(d.credentials?.dea && d.credentials?.licenses?.length > 0 && d.credentials?.boardCert),
     progress: (d) => {
-      const f = [d.credentials.dea, d.credentials.deaExp, d.credentials.licenses.length > 0, d.credentials.boardCert];
+      const f = [d.credentials?.dea, d.credentials?.deaExp, (d.credentials?.licenses?.length ?? 0) > 0, d.credentials?.boardCert];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -177,9 +177,9 @@ window.SECTIONS = [
     blurb: "Carrier, policy limits, and certificate of insurance upload.",
     fields: 6,
     minutes: 2,
-    isComplete: (d) => !!(d.malpractice.carrier && d.malpractice.policyNumber && d.malpractice.fileName),
+    isComplete: (d) => !!(d.malpractice?.carrier && d.malpractice?.policyNumber && d.malpractice?.fileName),
     progress: (d) => {
-      const f = [d.malpractice.carrier, d.malpractice.policyNumber, d.malpractice.perOccurrence, d.malpractice.expires, d.malpractice.fileName];
+      const f = [d.malpractice?.carrier, d.malpractice?.policyNumber, d.malpractice?.perOccurrence, d.malpractice?.expires, d.malpractice?.fileName];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -190,9 +190,9 @@ window.SECTIONS = [
     blurb: "What you prescribe, preferred bases, sterile vs. non-sterile.",
     fields: 5,
     minutes: 3,
-    isComplete: (d) => d.compounding.categories.length > 0 && d.compounding.formulations.length > 0,
+    isComplete: (d) => (d.compounding?.categories?.length ?? 0) > 0 && (d.compounding?.formulations?.length ?? 0) > 0,
     progress: (d) => {
-      const f = [d.compounding.categories.length > 0, d.compounding.formulations.length > 0, d.compounding.bases.length > 0];
+      const f = [(d.compounding?.categories?.length ?? 0) > 0, (d.compounding?.formulations?.length ?? 0) > 0, (d.compounding?.bases?.length ?? 0) > 0];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -203,9 +203,9 @@ window.SECTIONS = [
     blurb: "Estimated monthly Rx volume, populations, and payment mix.",
     fields: 5,
     minutes: 2,
-    isComplete: (d) => !!(d.patient.avgPatients && d.patient.monthlyRx),
+    isComplete: (d) => !!(d.patient?.avgPatients && d.patient?.monthlyRx),
     progress: (d) => {
-      const f = [d.patient.avgPatients, d.patient.monthlyRx, d.patient.populations.length > 0];
+      const f = [d.patient?.avgPatients, d.patient?.monthlyRx, (d.patient?.populations?.length ?? 0) > 0];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -216,8 +216,8 @@ window.SECTIONS = [
     blurb: "Where finished compounds are delivered. Add as many as needed.",
     fields: 4,
     minutes: 2,
-    isComplete: (d) => d.shipping.length > 0 && d.shipping.some((s) => s.primary),
-    progress: (d) => (d.shipping.length > 0 ? 1 : 0),
+    isComplete: (d) => (d.shipping?.length ?? 0) > 0 && d.shipping.some((s) => s.primary),
+    progress: (d) => ((d.shipping?.length ?? 0) > 0 ? 1 : 0),
   },
   {
     id: "billing",
@@ -226,9 +226,9 @@ window.SECTIONS = [
     blurb: "Payment method, terms, and statement delivery.",
     fields: 5,
     minutes: 2,
-    isComplete: (d) => !!(d.billing.method && d.billing.statementEmail),
+    isComplete: (d) => !!(d.billing?.method && d.billing?.statementEmail),
     progress: (d) => {
-      const f = [d.billing.method, d.billing.accountName, d.billing.statementEmail, d.billing.netTerms];
+      const f = [d.billing?.method, d.billing?.accountName, d.billing?.statementEmail, d.billing?.netTerms];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -239,9 +239,9 @@ window.SECTIONS = [
     blurb: "Surescripts SPI, EHR system, and eFax for refill requests.",
     fields: 4,
     minutes: 1,
-    isComplete: (d) => !!(d.ehr.system && d.ehr.surescriptsId),
+    isComplete: (d) => !!(d.ehr?.system && d.ehr?.surescriptsId),
     progress: (d) => {
-      const f = [d.ehr.system, d.ehr.surescriptsId, d.ehr.eFax];
+      const f = [d.ehr?.system, d.ehr?.surescriptsId, d.ehr?.eFax];
       return f.filter(Boolean).length / f.length;
     },
   },
@@ -252,8 +252,8 @@ window.SECTIONS = [
     blurb: "Team members who can place orders or view patient records.",
     fields: 3,
     minutes: 2,
-    isComplete: (d) => d.staff.length > 0,
-    progress: (d) => (d.staff.length > 0 ? 1 : 0),
+    isComplete: (d) => (d.staff?.length ?? 0) > 0,
+    progress: (d) => ((d.staff?.length ?? 0) > 0 ? 1 : 0),
   },
   {
     id: "attest",
@@ -262,9 +262,9 @@ window.SECTIONS = [
     blurb: "HIPAA, USP <795>/<797> attestations, and provider e-signature.",
     fields: 7,
     minutes: 3,
-    isComplete: (d) => d.attestations.truthful && d.attestations.boardStanding && d.attestations.hipaa && d.attestations.usp && d.attestations.signed,
+    isComplete: (d) => !!(d.attestations?.truthful && d.attestations?.boardStanding && d.attestations?.hipaa && d.attestations?.usp && d.attestations?.signed),
     progress: (d) => {
-      const a = d.attestations;
+      const a = d.attestations ?? {};
       const f = [a.truthful, a.boardStanding, a.noSanctions, a.hipaa, a.usp, a.samHsa, a.signed];
       return f.filter(Boolean).length / f.length;
     },
