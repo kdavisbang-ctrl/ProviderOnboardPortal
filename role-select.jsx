@@ -28,7 +28,7 @@ function RoleSelectScreen({ user, onRole }) {
         </div>
 
         <div style={{ fontFamily: 'var(--serif)', fontSize: 30, fontWeight: 400, letterSpacing: '-0.02em', marginBottom: 10 }}>
-          How will you use Atrium?
+          How will you use Athena Compounding?
         </div>
         <p style={{ color: 'var(--ink-3)', fontSize: 14, marginBottom: 32, margin: '0 0 32px' }}>
           Select your role to continue. You'll see a different experience based on what you choose.

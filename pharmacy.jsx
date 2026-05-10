@@ -102,16 +102,27 @@ function PharmacyDashboard({ onOpenApp }) {
 
   return (
     <div className="page page--full">
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--brand-ink)', marginBottom: 10 }}>
-          Athena Compounding · Admin Portal
+      <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24 }}>
+        <div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--brand-ink)', marginBottom: 10 }}>
+            Athena Compounding · Admin Portal
+          </div>
+          <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 30, letterSpacing: '-0.02em', margin: '0 0 8px' }}>
+            Provider Applications
+          </h1>
+          <p style={{ color: 'var(--ink-3)', margin: 0, fontSize: 14 }}>
+            Review, approve, or request changes on provider credentialing applications.
+          </p>
         </div>
-        <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 30, letterSpacing: '-0.02em', margin: '0 0 8px' }}>
-          Provider Applications
-        </h1>
-        <p style={{ color: 'var(--ink-3)', margin: 0, fontSize: 14 }}>
-          Review, approve, or request changes on provider credentialing applications.
-        </p>
+        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 'var(--r-3)', padding: '14px 18px', minWidth: 240, flexShrink: 0 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--ink-2)' }}>Pharmacy Staff Access</div>
+          <div style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 10 }}>
+            Staff accounts are created by Athena administrators. Providers self-register using their NPI.
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--ink-4)', fontFamily: 'var(--mono)', padding: '8px 10px', background: 'var(--bg-2)', borderRadius: 'var(--r-1)' }}>
+            To add staff: Supabase Dashboard → SQL Editor → insert into profiles
+          </div>
+        </div>
       </div>
 
       {/* Stats */}

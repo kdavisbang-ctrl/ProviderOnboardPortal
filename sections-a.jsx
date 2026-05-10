@@ -5,25 +5,40 @@ function IdentitySection({ data, set }) {
   const [lookingUp, setLookingUp] = React.useState(false);
   const id = data.identity;
 
-  const lookupNpi = () => {
+  const [npiError, setNpiError] = React.useState('');
+  const lookupNpi = async () => {
     if (!id.npi || id.npi.length < 10) return;
-    setLookingUp(true);
-    setTimeout(() => {
-      setLookingUp(false);
+    setLookingUp(true); setNpiError('');
+    try {
+      const res = await fetch(`https://npiregistry.cms.hhs.gov/api/?number=${id.npi}&version=2.1`);
+      const json = await res.json();
+      if (!json.result_count || json.result_count === 0) {
+        setNpiError('No provider found for this NPI. Please check the number.');
+        setLookingUp(false); return;
+      }
+      const r = json.results[0];
+      if (r.enumeration_type !== 'NPI-1') {
+        setNpiError('This NPI belongs to an organization, not an individual provider.');
+        setLookingUp(false); return;
+      }
+      const b = r.basic;
+      const tax = r.taxonomies?.find(t => t.primary) || r.taxonomies?.[0];
+      const addr = r.addresses?.find(a => a.address_purpose === 'LOCATION') || r.addresses?.[0];
       set("identity", {
         ...id,
         npiVerified: true,
-        firstName: id.firstName || "Marina",
-        lastName: id.lastName || "Castellano",
-        credentials: id.credentials || "MD",
+        firstName: id.firstName || b.first_name || '',
+        lastName:  id.lastName  || b.last_name  || '',
+        credentials: id.credentials || b.credential || '',
         npiResult: {
-          name: "MARINA E CASTELLANO MD",
-          taxonomy: "Family Medicine (207Q00000X)",
-          enumDate: "2009-04-12",
-          address: "2240 Lombard St, San Francisco, CA 94123",
+          name: [b.first_name, b.middle_name, b.last_name, b.credential].filter(Boolean).join(' '),
+          taxonomy: tax ? `${tax.desc} (${tax.code})` : '',
+          enumDate: b.enumeration_date || '',
+          address: addr ? [addr.address_1, addr.address_2, `${addr.city}, ${addr.state} ${addr.postal_code?.slice(0,5)}`].filter(Boolean).join(', ') : '',
         },
       });
-    }, 1100);
+    } catch { setNpiError('NPI registry unavailable. Please try again.'); }
+    setLookingUp(false);
   };
 
   const upd = (k, v) => set("identity", { ...id, [k]: v });
@@ -42,6 +57,7 @@ function IdentitySection({ data, set }) {
             </button>
           </div>
         </Field>
+        {npiError && <div style={{ marginTop: 8, fontSize: 12.5, color: 'var(--danger)', padding: '8px 12px', background: 'var(--danger-soft)', borderRadius: 'var(--r-1)' }}>{npiError}</div>}
         {id.npiVerified && id.npiResult && (
           <div className="verify-card fade-up">
             <div className="vc-ic"><Ic.check /></div>
@@ -87,7 +103,7 @@ function IdentitySection({ data, set }) {
 
       <div className="subsec">
         <h2>Practice information</h2>
-        <p className="sub">The legal entity Atrium will bill and ship to.</p>
+        <p className="sub">The legal entity Athena Compounding will bill and ship to.</p>
         <div className="form">
           <div className="row-2">
             <Field label="Practice / facility name" required><Input value={id.practice.name} onChange={(v) => updP("name", v)} placeholder="Bayview Wellness Medical Group" /></Field>
@@ -122,7 +138,7 @@ function CredentialsSection({ data, set }) {
     <>
       <div className="subsec">
         <h2>DEA registration</h2>
-        <p className="sub">Required to prescribe controlled substances. Atrium verifies via DEA registry.</p>
+        <p className="sub">Required to prescribe controlled substances. Athena Compounding verifies via DEA registry.</p>
         <div className="form">
           <div className="row-2">
             <Field label="DEA number" required hint="Format: 2 letters + 7 digits"><Input mono value={c.dea} onChange={(v) => upd("dea", v.toUpperCase())} placeholder="AB1234567" maxLength={9} /></Field>
@@ -193,7 +209,7 @@ function MalpracticeSection({ data, set }) {
     <>
       <div className="subsec">
         <h2>Carrier & policy</h2>
-        <p className="sub">Atrium requires active malpractice coverage to prescribe compounded medications.</p>
+        <p className="sub">Athena Compounding requires active malpractice coverage to prescribe compounded medications.</p>
         <div className="form">
           <div className="row-2">
             <Field label="Insurance carrier" required>
@@ -202,14 +218,14 @@ function MalpracticeSection({ data, set }) {
             <Field label="Policy number" required><Input mono value={m.policyNumber} onChange={(v) => upd("policyNumber", v)} placeholder="TDC-0000-00000" /></Field>
           </div>
           <div className="row-2">
-            <Field label="Per-occurrence limit" required hint="Atrium minimum: $1,000,000">
+            <Field label="Per-occurrence limit" required hint="Athena Compounding minimum: $1,000,000">
               <Select value={String(m.perOccurrence || "")} onChange={(v) => upd("perOccurrence", Number(v))} placeholder="Select…" options={[
                 { value: "1000000", label: "$1,000,000" },
                 { value: "2000000", label: "$2,000,000" },
                 { value: "3000000", label: "$3,000,000" },
               ]} />
             </Field>
-            <Field label="Aggregate limit" required hint="Atrium minimum: $3,000,000">
+            <Field label="Aggregate limit" required hint="Athena Compounding minimum: $3,000,000">
               <Select value={String(m.aggregate || "")} onChange={(v) => upd("aggregate", Number(v))} placeholder="Select…" options={[
                 { value: "3000000", label: "$3,000,000" },
                 { value: "5000000", label: "$5,000,000" },
@@ -228,7 +244,7 @@ function MalpracticeSection({ data, set }) {
 
       <div className="subsec">
         <h2>Certificate of insurance</h2>
-        <p className="sub">Upload your most recent COI showing Atrium-acceptable coverage.</p>
+        <p className="sub">Upload your most recent COI showing Athena Compounding-acceptable coverage.</p>
         <FileUpload
           filed={!!m.fileName}
           fileName={m.fileName}

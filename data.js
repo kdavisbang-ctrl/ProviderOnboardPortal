@@ -1,4 +1,4 @@
-// Demo seed data for Atrium provider onboarding
+// Demo seed data for Athena Compounding provider onboarding
 
 window.DEMO_DATA = {
   identity: {

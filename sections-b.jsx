@@ -28,7 +28,7 @@ function CompoundingSection({ data, set }) {
 
       <div className="subsec">
         <h2>Preferred formulations</h2>
-        <p className="sub">Helps Atrium suggest the right base when you prescribe.</p>
+        <p className="sub">Helps Athena Compounding suggest the right base when you prescribe.</p>
         <ChipGrid value={c.formulations} onChange={(v) => upd("formulations", v)} options={[
           "Sublingual troches",
           "Topical creams",
@@ -57,7 +57,7 @@ function CompoundingSection({ data, set }) {
 
       <div className="subsec">
         <h2>Preferred bases & flavors</h2>
-        <p className="sub">Atrium will default to these when formulations are flexible.</p>
+        <p className="sub">Athena Compounding will default to these when formulations are flexible.</p>
         <Field label="Preferred topical bases">
           <ChipGrid value={c.bases} onChange={(v) => upd("bases", v)} options={["VersaBase", "Lipoderm", "PCCA Pluronic", "Aquaphor", "Eucerin", "Pentravan"]} />
         </Field>
@@ -89,7 +89,7 @@ function PatientSection({ data, set }) {
           <RadioPills value={p.avgPatients} onChange={(v) => upd("avgPatients", v)} options={["<100", "100–200", "200–500", "500–1000", "1000+"]} />
         </Field>
         <div style={{ marginTop: 18 }}>
-          <Field label="Estimated monthly Rx to Atrium" required hint="Compounded prescriptions only. We use this to plan inventory.">
+          <Field label="Estimated monthly Rx to Athena Compounding" required hint="Compounded prescriptions only. We use this to plan inventory.">
             <Input type="number" value={p.monthlyRx} onChange={(v) => upd("monthlyRx", v)} placeholder="75" />
           </Field>
         </div>
@@ -222,7 +222,7 @@ function BillingSection({ data, set }) {
     <>
       <div className="subsec">
         <h2>Payment method</h2>
-        <p className="sub">How will the practice pay Atrium for compounded medications?</p>
+        <p className="sub">How will the practice pay Athena Compounding for compounded medications?</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
           <Check on={b.method === "ACH"} onClick={() => upd("method", "ACH")} label="ACH bank transfer" desc="Lowest fees · Net 30 default" />
           <Check on={b.method === "Card"} onClick={() => upd("method", "Card")} label="Credit card on file" desc="3% surcharge · charged on ship" />
@@ -235,7 +235,7 @@ function BillingSection({ data, set }) {
           <hr className="divider" />
           <div className="subsec">
             <h2>Bank account</h2>
-            <p className="sub">Encrypted at rest. Atrium uses Plaid for instant verification.</p>
+            <p className="sub">Encrypted at rest. Athena Compounding uses Plaid for instant verification.</p>
             <div className="form">
               <Field label="Account holder name" required><Input value={b.accountName} onChange={(v) => upd("accountName", v)} placeholder="Practice legal name" /></Field>
               <div className="row-2">
@@ -278,7 +278,7 @@ function EhrSection({ data, set }) {
 
       <div className="subsec">
         <h2>E-prescribing</h2>
-        <p className="sub">Atrium accepts e-prescriptions via Surescripts. Faxed Rx is also supported.</p>
+        <p className="sub">Athena Compounding accepts e-prescriptions via Surescripts. Faxed Rx is also supported.</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
           <Check on={e.erxEnabled} onClick={() => upd("erxEnabled", true)} label="Yes — I e-prescribe" desc="Faster turnaround, fewer transcription errors" />
           <Check on={!e.erxEnabled} onClick={() => upd("erxEnabled", false)} label="Fax / paper Rx only" desc="We'll provide our compound-specific fax form" />
@@ -413,12 +413,12 @@ function AttestSection({ data, set }) {
   const clear = () => { setPaths([]); upd("signed", false); upd("signedDate", ""); };
 
   const items = [
-    { k: "truthful", h: "Truth & accuracy", b: "I attest that all information provided in this onboarding is true and accurate to the best of my knowledge, and I will notify Atrium within 30 days of any material change." },
+    { k: "truthful", h: "Truth & accuracy", b: "I attest that all information provided in this onboarding is true and accurate to the best of my knowledge, and I will notify Athena Compounding within 30 days of any material change." },
     { k: "boardStanding", h: "Active license & good standing", b: "I am currently licensed and in good standing in every state listed, with no pending or unresolved disciplinary actions by any state medical board." },
     { k: "noSanctions", h: "No federal exclusions", b: "I am not currently excluded, debarred, or otherwise ineligible to participate in any federal healthcare program, and I am not listed on the OIG LEIE or GSA SAM exclusion lists." },
-    { k: "hipaa", h: "HIPAA Business Associate Agreement", b: "I have read and agree to Atrium's Business Associate Agreement and will safeguard PHI in accordance with HIPAA Privacy and Security Rules." },
+    { k: "hipaa", h: "HIPAA Business Associate Agreement", b: "I have read and agree to Athena Compounding's Business Associate Agreement and will safeguard PHI in accordance with HIPAA Privacy and Security Rules." },
     { k: "usp", h: "USP <795> & <797> awareness", b: "I understand that compounded medications are prepared per USP <795> (non-sterile) and <797> (sterile) standards, are not FDA-approved, and are intended for the specific patient on each prescription." },
-    { k: "samHsa", h: "Office use only / dispensing", b: "I will not redistribute, resell, or dispense compounded medications received from Atrium except in accordance with applicable state and federal law (office-use thresholds, in-office administration where permitted)." },
+    { k: "samHsa", h: "Office use only / dispensing", b: "I will not redistribute, resell, or dispense compounded medications received from Athena Compounding except in accordance with applicable state and federal law (office-use thresholds, in-office administration where permitted)." },
   ];
 
   return (
