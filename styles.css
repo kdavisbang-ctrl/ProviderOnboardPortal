@@ -1119,6 +1119,38 @@ a { color: var(--brand); text-decoration: none; }
 }
 .fade-up { animation: fadeUp 240ms ease-out both; }
 
+/* ─── Reports ────────────────────────────────────── */
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.report-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 150ms, box-shadow 150ms, transform 100ms;
+}
+.report-card:hover {
+  border-color: var(--brand);
+  box-shadow: 0 2px 14px rgba(78,125,158,.13);
+  transform: translateY(-1px);
+}
+
+.report-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
 /* ─── Responsive ─────────────────────────────────────── */
 
 .pharm-mobile-nav { display: none; }
@@ -1249,6 +1281,9 @@ a { color: var(--brand); text-decoration: none; }
 
   /* Pharmacy review panel */
   .pharm-review-grid { grid-template-columns: 1fr !important; }
+
+  /* Reports — 2 cols on tablet */
+  .reports-grid { grid-template-columns: 1fr 1fr !important; }
 }
 
 @media (max-width: 480px) {
@@ -1271,5 +1306,8 @@ a { color: var(--brand); text-decoration: none; }
   .pharm-stats { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
   .pharm-stats > div { padding: 12px 14px !important; }
   .pharm-stats > div > div:first-child { font-size: 24px !important; }
+
+  /* Reports — 1 col on phone */
+  .reports-grid { grid-template-columns: 1fr !important; }
 }
 

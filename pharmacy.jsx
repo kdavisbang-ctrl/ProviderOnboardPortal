@@ -1,4 +1,4 @@
-/* global React, SECTIONS, Ic, Badge, AccountMenu */
+/* global React, SECTIONS, Ic, Badge, AccountMenu, PharmacyReports */
 
 // ── Status helpers ────────────────────────────────
 const STATUS_META = {
@@ -23,9 +23,28 @@ function providerName(app) {
 // ── Pharmacy App shell ────────────────────────────
 function PharmacyApp({ user, onSignOut }) {
   const [selected, setSelected] = React.useState(null);
+  const [view, setView]         = React.useState('dashboard');
 
-  const openApp  = (app) => { setSelected(app); window.scrollTo({ top: 0, behavior: 'instant' }); };
-  const closeApp = ()    => setSelected(null);
+  const openApp     = (app) => { setSelected(app); window.scrollTo({ top: 0, behavior: 'instant' }); };
+  const closeApp    = ()    => setSelected(null);
+  const goDashboard = ()    => { setSelected(null); setView('dashboard'); };
+  const goReports   = ()    => { setSelected(null); setView('reports'); };
+
+  const crumb = selected ? (
+    <>
+      <span style={{ cursor: 'pointer' }} onClick={closeApp}>Applications</span>
+      <span style={{ color: 'var(--ink-4)' }}>/</span>
+      <b>{providerName(selected)}</b>
+    </>
+  ) : view === 'reports' ? (
+    <>
+      <span style={{ cursor: 'pointer' }} onClick={goDashboard}>Admin</span>
+      <span style={{ color: 'var(--ink-4)' }}>/</span>
+      <b>Reports</b>
+    </>
+  ) : (
+    <span>Pharmacy Admin</span>
+  );
 
   return (
     <div className="app">
@@ -39,20 +58,20 @@ function PharmacyApp({ user, onSignOut }) {
               <path d="M26 9.5 C29.5 9.5 31 12 31 15.5 C31 19 29.5 22 26 22.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none"/>
             </svg>
           </div>
-          <span>Athena Compounding</span>
+          <span className="brand-name">Athena Compounding</span>
         </div>
-        <div className="crumb">
-          {selected ? (
-            <>
-              <span style={{ cursor: 'pointer' }} onClick={closeApp}>Applications</span>
-              <span style={{ color: 'var(--ink-4)' }}>/</span>
-              <b>{providerName(selected)}</b>
-            </>
-          ) : (
-            <span>Pharmacy Admin</span>
-          )}
-        </div>
+        <div className="crumb">{crumb}</div>
         <div className="right">
+          <div style={{ display: 'flex', gap: 4 }}>
+            <button
+              className={'btn btn--sm ' + (!selected && view === 'dashboard' ? 'btn--brand' : 'btn--ghost')}
+              onClick={goDashboard}
+            >Applications</button>
+            <button
+              className={'btn btn--sm ' + (!selected && view === 'reports' ? 'btn--brand' : 'btn--ghost')}
+              onClick={goReports}
+            >Reports</button>
+          </div>
           <div className="account">
             <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.email}
@@ -64,7 +83,9 @@ function PharmacyApp({ user, onSignOut }) {
 
       {selected
         ? <PharmacyReview app={selected} user={user} onBack={closeApp} onAppUpdated={setSelected} />
-        : <PharmacyDashboard onOpenApp={openApp} />}
+        : view === 'reports'
+          ? <PharmacyReports />
+          : <PharmacyDashboard onOpenApp={openApp} />}
     </div>
   );
 }
