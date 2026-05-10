@@ -44,8 +44,8 @@ function AthenaNavLogo({ size = 28 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <path d="M2 28 L13 3 L22 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M7 18 L18 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M30 10 A 9.2 9.2 0 1 0 30 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M7 17 L18 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M12 9 A 10 10 0 1 1 12 21" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
     </svg>
   );
 }
