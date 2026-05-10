@@ -3,7 +3,9 @@
 // ─── Identity ──────────────────────────────────────
 function IdentitySection({ data, set }) {
   const [lookingUp, setLookingUp] = React.useState(false);
-  const id = data.identity;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const raw = data.identity;
+  const id = { ...raw, firstName: s(raw.firstName), middleName: s(raw.middleName), lastName: s(raw.lastName), credentials: s(raw.credentials), npi: s(raw.npi), email: s(raw.email), phone: s(raw.phone) };
 
   const [npiError, setNpiError] = React.useState('');
   const lookupNpi = async () => {

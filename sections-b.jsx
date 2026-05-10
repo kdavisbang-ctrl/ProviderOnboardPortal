@@ -216,7 +216,9 @@ function ShipForm({ value, onSave, onCancel }) {
 
 // ─── Billing ───────────────────────────────────────
 function BillingSection({ data, set }) {
-  const b = data.billing;
+  const raw = data.billing;
+  const s = (v) => typeof v === 'string' ? v : '';
+  const b = { ...raw, method: s(raw.method), accountName: s(raw.accountName), routing: s(raw.routing), accountLast4: s(raw.accountLast4), statementEmail: s(raw.statementEmail), netTerms: s(raw.netTerms) };
   const upd = (k, v) => set("billing", { ...b, [k]: v });
   return (
     <>
