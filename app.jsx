@@ -4,7 +4,7 @@
    CompoundingSection, PatientSection, ShippingSection,
    BillingSection, EhrSection, StaffSection, AttestSection,
    TweaksPanel, TweakSection, TweakButton, useTweaks,
-   AuthScreen */
+   AuthScreen, RoleSelectScreen, PharmacyApp */
 
 const SECTION_COMPS = {
   identity:    IdentitySection,
@@ -54,24 +54,50 @@ function dataToDb(data) {
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"demoData": false}/*EDITMODE-END*/;
 
+function Spinner({ label }) {
+  return (
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink-3)', fontSize: 13 }}>
+        <span className="spin" style={{ width: 14, height: 14, borderWidth: 1.5, color: 'var(--ink-3)' }} />
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function ErrorScreen({ error, onRetry }) {
+  return (
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
+      <div style={{ padding: 32, background: 'var(--danger-soft)', border: '1px solid var(--danger)', borderRadius: 'var(--r-3)', color: 'var(--danger)', maxWidth: 400, textAlign: 'center' }}>
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Failed to load your data</div>
+        <div style={{ fontSize: 13, marginBottom: 16, color: 'var(--ink-2)' }}>{error}</div>
+        <button className="btn btn--ghost btn--sm" onClick={onRetry}>Try again</button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
-  // Auth state — undefined = still checking, null = not logged in
-  const [session, setSession]           = React.useState(undefined);
-  const [user, setUser]                 = React.useState(null);
+  // Auth — undefined = still checking
+  const [session, setSession] = React.useState(undefined);
+  const [user, setUser]       = React.useState(null);
 
-  // DB state
-  const [dbId, setDbId]                 = React.useState(null);
-  const [onboardingId, setOnboardingId] = React.useState('');
-  const [dbReady, setDbReady]           = React.useState(false);
-  const [loadError, setLoadError]       = React.useState(null);
+  // Role — null = loading, 'none' = no profile yet
+  const [role, setRole]       = React.useState(null);
 
-  // Form state
-  const [data, setData]       = React.useState(clone(EMPTY_DATA));
-  const [route, setRoute]     = React.useState('hub');
-  const [savedAt, setSavedAt] = React.useState(Date.now());
-  const [saving, setSaving]   = React.useState(false);
+  // Provider onboarding state
+  const [dbId, setDbId]                   = React.useState(null);
+  const [onboardingId, setOnboardingId]   = React.useState('');
+  const [appStatus, setAppStatus]         = React.useState('draft');
+  const [sectionReviews, setSectionReviews] = React.useState({});
+  const [dbReady, setDbReady]             = React.useState(false);
+  const [loadError, setLoadError]         = React.useState(null);
+  const [data, setData]                   = React.useState(clone(EMPTY_DATA));
+  const [route, setRoute]                 = React.useState('hub');
+  const [savedAt, setSavedAt]             = React.useState(Date.now());
+  const [saving, setSaving]               = React.useState(false);
 
   // ── Auth listener ──────────────────────────────────
   React.useEffect(() => {
@@ -86,13 +112,26 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ── Load data when user logs in ────────────────────
+  // ── Load role when user is known ───────────────────
   React.useEffect(() => {
-    if (!user) return;
-    loadData(user.id);
+    if (!user) { setRole(null); return; }
+    loadRole(user.id);
   }, [user?.id]);
 
-  const loadData = async (userId) => {
+  const loadRole = async (userId) => {
+    const { data: profile, error } = await window.sb
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) { setRole('none'); return; }
+    setRole(profile.role);
+    if (profile.role === 'provider') loadProviderData(userId);
+  };
+
+  // ── Load provider data ─────────────────────────────
+  const loadProviderData = async (userId) => {
     setDbReady(false);
     setLoadError(null);
 
@@ -110,12 +149,24 @@ function App() {
         .select()
         .single();
       if (insertErr) { setLoadError(insertErr.message); }
-      else { setDbId(newRow.id); setOnboardingId(newRow.onboarding_id); }
+      else { setDbId(newRow.id); setOnboardingId(newRow.onboarding_id); setAppStatus(newRow.status || 'draft'); }
     } else {
       const row = rows[0];
       setDbId(row.id);
       setOnboardingId(row.onboarding_id);
+      setAppStatus(row.status || 'draft');
       setData(dbToData(row));
+
+      // Load section reviews so provider can see pharmacy feedback
+      const { data: reviews } = await window.sb
+        .from('section_reviews')
+        .select('*')
+        .eq('provider_onboarding_id', row.id);
+      if (reviews) {
+        const r = {};
+        reviews.forEach(rev => { r[rev.section_id] = { status: rev.status, notes: rev.notes || '' }; });
+        setSectionReviews(r);
+      }
     }
     setDbReady(true);
   };
@@ -125,76 +176,56 @@ function App() {
   const skipFirstSave = React.useRef(true);
 
   React.useEffect(() => {
-    if (!dbId || !dbReady) return;
+    if (!dbId || !dbReady || role !== 'provider') return;
     if (skipFirstSave.current) { skipFirstSave.current = false; return; }
 
     setSaving(true);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      await window.sb
-        .from('provider_onboardings')
-        .update(dataToDb(data))
-        .eq('id', dbId);
+      await window.sb.from('provider_onboardings').update(dataToDb(data)).eq('id', dbId);
       setSaving(false);
       setSavedAt(Date.now());
     }, 800);
     return () => clearTimeout(saveTimer.current);
   }, [data]);
 
-  const set = (key, value) => setData((d) => ({ ...d, [key]: value }));
+  const set = (key, value) => setData(d => ({ ...d, [key]: value }));
 
   const goHub     = () => setRoute('hub');
   const goSection = (id) => { setRoute(id); window.scrollTo({ top: 0, behavior: 'instant' }); };
 
+  // ── Submit application ─────────────────────────────
+  const submitApplication = async () => {
+    const { data: updated } = await window.sb
+      .from('provider_onboardings')
+      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
+      .eq('id', dbId)
+      .select()
+      .single();
+    if (updated) setAppStatus('submitted');
+  };
+
+  // ── Sign out ───────────────────────────────────────
   const signOut = async () => {
     await window.sb.auth.signOut();
     setData(clone(EMPTY_DATA));
-    setDbId(null);
-    setOnboardingId('');
-    setDbReady(false);
-    setRoute('hub');
+    setDbId(null); setOnboardingId(''); setDbReady(false);
+    setRole(null); setRoute('hub');
     skipFirstSave.current = true;
   };
 
-  const stats = SECTIONS.map((s) => ({ s, complete: s.isComplete(data), progress: s.progress(data) }));
+  const stats = SECTIONS.map(s => ({ s, complete: s.isComplete(data), progress: s.progress(data) }));
 
   // ── Render states ──────────────────────────────────
 
-  if (session === undefined) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink-3)', fontSize: 13 }}>
-          <span className="spin" style={{ width: 14, height: 14, borderWidth: 1.5, color: 'var(--ink-3)' }} />
-          Loading…
-        </div>
-      </div>
-    );
-  }
-
+  if (session === undefined || (user && role === null)) return <Spinner label="Loading…" />;
   if (!session) return <AuthScreen />;
+  if (role === 'none') return <RoleSelectScreen user={user} onRole={(r) => { setRole(r); if (r === 'provider') loadProviderData(user.id); }} />;
+  if (role === 'pharmacy') return <PharmacyApp user={user} onSignOut={signOut} />;
 
-  if (!dbReady) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink-3)', fontSize: 13 }}>
-          <span className="spin" style={{ width: 14, height: 14, borderWidth: 1.5, color: 'var(--ink-3)' }} />
-          Loading your profile…
-        </div>
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
-        <div style={{ padding: 32, background: 'var(--danger-soft)', border: '1px solid var(--danger)', borderRadius: 'var(--r-3)', color: 'var(--danger)', maxWidth: 400, textAlign: 'center' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Failed to load your data</div>
-          <div style={{ fontSize: 13, marginBottom: 16 }}>{loadError}</div>
-          <button className="btn btn--ghost btn--sm" onClick={() => loadData(user.id)}>Try again</button>
-        </div>
-      </div>
-    );
-  }
+  // Provider
+  if (!dbReady) return <Spinner label="Loading your profile…" />;
+  if (loadError) return <ErrorScreen error={loadError} onRetry={() => loadProviderData(user.id)} />;
 
   const savedAgo   = Math.round((Date.now() - savedAt) / 1000);
   const savedLabel = savedAgo < 5 ? 'just now' : savedAgo < 60 ? `${savedAgo}s ago` : `${Math.round(savedAgo / 60)}m ago`;
@@ -213,7 +244,7 @@ function App() {
             <>
               <span style={{ cursor: 'pointer' }} onClick={goHub}>Onboarding</span>
               <span style={{ color: 'var(--ink-4)' }}>/</span>
-              <b>{SECTIONS.find((s) => s.id === route)?.title}</b>
+              <b>{SECTIONS.find(s => s.id === route)?.title}</b>
             </>
           )}
         </div>
@@ -236,7 +267,14 @@ function App() {
       </header>
 
       {route === 'hub' ? (
-        <Hub data={data} onOpen={goSection} onboardingId={onboardingId} />
+        <Hub
+          data={data}
+          onOpen={goSection}
+          onboardingId={onboardingId}
+          status={appStatus}
+          sectionReviews={sectionReviews}
+          onSubmit={submitApplication}
+        />
       ) : (
         <SectionDetail
           sectionId={route}
@@ -261,7 +299,7 @@ function App() {
 }
 
 function SectionDetail({ sectionId, data, set, stats, onNav, onHub }) {
-  const idx  = SECTIONS.findIndex((s) => s.id === sectionId);
+  const idx  = SECTIONS.findIndex(s => s.id === sectionId);
   const s    = SECTIONS[idx];
   const Comp = SECTION_COMPS[sectionId];
   const prev = SECTIONS[idx - 1];
