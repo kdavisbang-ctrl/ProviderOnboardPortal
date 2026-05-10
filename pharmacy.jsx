@@ -1,4 +1,4 @@
-/* global React, SECTIONS, Ic, Badge */
+/* global React, SECTIONS, Ic, Badge, AccountMenu */
 
 // ── Status helpers ────────────────────────────────
 const STATUS_META = {
@@ -57,9 +57,7 @@ function PharmacyApp({ user, onSignOut }) {
             <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.email}
             </span>
-            <div className="avatar" title="Sign out" style={{ cursor: 'pointer' }} onClick={onSignOut}>
-              {(user.email || '?')[0].toUpperCase()}
-            </div>
+            <AccountMenu email={user.email} onSignOut={onSignOut} />
           </div>
         </div>
       </header>

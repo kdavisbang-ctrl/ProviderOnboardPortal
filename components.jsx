@@ -128,5 +128,51 @@ function StatusBadge({ status }) {
   return <Badge kind={m.kind}>{m.label}</Badge>;
 }
 
+function AccountMenu({ email, onSignOut }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div className="avatar" style={{ cursor: 'pointer' }} onClick={() => setOpen(o => !o)}>
+        {(email || '?')[0].toUpperCase()}
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+          background: 'var(--panel)', border: '1px solid var(--line)',
+          borderRadius: 'var(--r-2)', boxShadow: '0 4px 16px rgba(0,0,0,.10)',
+          minWidth: 180, zIndex: 100, overflow: 'hidden',
+        }}>
+          <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid var(--line)' }}>
+            <div style={{ fontSize: 11, color: 'var(--ink-4)', marginBottom: 2 }}>Signed in as</div>
+            <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
+          </div>
+          <button
+            onClick={() => { setOpen(false); onSignOut(); }}
+            style={{
+              display: 'flex', alignItems: 'center', width: '100%',
+              padding: '10px 14px', background: 'none', border: 'none',
+              cursor: 'pointer', fontSize: 13, color: 'var(--ink-2)', textAlign: 'left',
+              transition: 'background 100ms',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // expose
-Object.assign(window, { Ic, Field, Input, Select, Textarea, Chip, ChipGrid, RadioPills, Check, Badge, FileUpload, StatusBadge });
+Object.assign(window, { Ic, Field, Input, Select, Textarea, Chip, ChipGrid, RadioPills, Check, Badge, FileUpload, StatusBadge, AccountMenu });

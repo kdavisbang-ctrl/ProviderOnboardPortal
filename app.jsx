@@ -1,5 +1,5 @@
 /* global React, ReactDOM, SECTIONS, EMPTY_DATA,
-   Hub, Ic, StatusBadge,
+   Hub, Ic, StatusBadge, AccountMenu,
    IdentitySection, CredentialsSection, MalpracticeSection,
    CompoundingSection, PatientSection, ShippingSection,
    BillingSection, EhrSection, StaffSection, AttestSection,
@@ -283,9 +283,7 @@ function App() {
             <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.email}
             </span>
-            <div className="avatar" title="Sign out" style={{ cursor: 'pointer' }} onClick={signOut}>
-              {(user.email || '?')[0].toUpperCase()}
-            </div>
+            <AccountMenu email={user.email} onSignOut={signOut} />
           </div>
         </div>
       </header>
