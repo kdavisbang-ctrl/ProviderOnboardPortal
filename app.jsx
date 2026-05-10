@@ -31,18 +31,24 @@ const SECTION_COMPS = {
 
 function clone(d) { return JSON.parse(JSON.stringify(d)); }
 
+// Coerce any field that should be a string (per template) back to '' if corrupt
+function coerceStrings(obj, template) {
+  Object.keys(template).forEach(k => {
+    if (typeof template[k] === 'string' && typeof obj[k] !== 'string') obj[k] = '';
+  });
+}
+
 function dbToData(row) {
   const e = EMPTY_DATA;
   const identity = { ...clone(e.identity), ...(row.identity_data || {}) };
   identity.practice = { ...clone(e.identity.practice), ...(identity.practice || {}) };
-  // Coerce identity string fields — guards against objects stored from older NPI lookup bugs
-  ['firstName', 'middleName', 'lastName', 'credentials', 'npi', 'email', 'phone'].forEach(k => {
-    if (typeof identity[k] !== 'string') identity[k] = '';
-  });
+  coerceStrings(identity, e.identity);
+  coerceStrings(identity.practice, e.identity.practice);
   const credentials = { ...clone(e.credentials), ...(row.credentials_data || {}) };
   if (!Array.isArray(credentials.licenses)) credentials.licenses = [];
   if (!Array.isArray(credentials.deaSchedules)) credentials.deaSchedules = [];
   if (!Array.isArray(credentials.csrStates)) credentials.csrStates = [];
+  coerceStrings(credentials, e.credentials);
   const compounding = { ...clone(e.compounding), ...(row.compounding_data || {}) };
   if (!Array.isArray(compounding.categories)) compounding.categories = [];
   if (!Array.isArray(compounding.formulations)) compounding.formulations = [];
@@ -50,16 +56,22 @@ function dbToData(row) {
   if (!Array.isArray(compounding.flavorPrefs)) compounding.flavorPrefs = [];
   const patient = { ...clone(e.patient), ...(row.patient_data || {}) };
   if (!Array.isArray(patient.populations)) patient.populations = [];
+  const malpractice = { ...clone(e.malpractice), ...(row.malpractice_data || {}) };
+  coerceStrings(malpractice, e.malpractice);
+  const billing = { ...clone(e.billing), ...(row.billing_data || {}) };
+  coerceStrings(billing, e.billing);
+  const ehr = { ...clone(e.ehr), ...(row.ehr_data || {}) };
+  coerceStrings(ehr, e.ehr);
   return {
     identity,
     credentials,
-    malpractice:  { ...clone(e.malpractice),  ...(row.malpractice_data  || {}) },
+    malpractice,
     compounding,
     patient,
-    shipping:     Array.isArray(row.shipping_data)     ? row.shipping_data     : clone(e.shipping),
-    billing:      { ...clone(e.billing),      ...(row.billing_data      || {}) },
-    ehr:          { ...clone(e.ehr),          ...(row.ehr_data          || {}) },
-    staff:        Array.isArray(row.staff_data)        ? row.staff_data        : clone(e.staff),
+    shipping:     Array.isArray(row.shipping_data) ? row.shipping_data : clone(e.shipping),
+    billing,
+    ehr,
+    staff:        Array.isArray(row.staff_data) ? row.staff_data : clone(e.staff),
     attestations: { ...clone(e.attestations), ...(row.attestations_data || {}) },
   };
 }

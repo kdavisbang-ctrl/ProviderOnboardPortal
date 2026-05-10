@@ -30,7 +30,8 @@ function Field({ label, hint, error, required, children }) {
 }
 
 function Input({ value, onChange, mono, ...rest }) {
-  return <input className={"input" + (mono ? " input--mono" : "")} value={value || ""} onChange={(e) => onChange(e.target.value)} {...rest} mono={undefined} />;
+  const safeVal = (value == null || typeof value === 'object') ? '' : value;
+  return <input className={"input" + (mono ? " input--mono" : "")} value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest} mono={undefined} />;
 }
 
 function Select({ value, onChange, options, placeholder, ...rest }) {
