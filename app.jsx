@@ -6,6 +6,17 @@
    TweaksPanel, TweakSection, TweakButton, useTweaks,
    AuthScreen, RoleSelectScreen, PharmacyApp */
 
+function AthenaLogo({ size = 28 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M5 26 L13 7 L16 13.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M27 7 L19 26" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M8.5 19.5 L18.5 19.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+      <path d="M26 9.5 C29.5 9.5 31 12 31 15.5 C31 19 29.5 22 26 22.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none"/>
+    </svg>
+  );
+}
+
 const SECTION_COMPS = {
   identity:    IdentitySection,
   credentials: CredentialsSection,
@@ -247,8 +258,8 @@ function App() {
     <div className="app" data-screen-label={route === 'hub' ? 'Hub' : 'Section: ' + route}>
       <header className="topbar">
         <div className="brand">
-          <div className="mark"></div>
-          <span>Atrium</span>
+          <div className="mark"><AthenaLogo size={28} /></div>
+          <span>Athena Compounding</span>
         </div>
         <div className="crumb">
           {route === 'hub' ? (

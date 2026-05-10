@@ -31,8 +31,15 @@ function PharmacyApp({ user, onSignOut }) {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <div className="mark"></div>
-          <span>Atrium</span>
+          <div className="mark">
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M5 26 L13 7 L16 13.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M27 7 L19 26" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M8.5 19.5 L18.5 19.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+              <path d="M26 9.5 C29.5 9.5 31 12 31 15.5 C31 19 29.5 22 26 22.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
+          <span>Athena Compounding</span>
         </div>
         <div className="crumb">
           {selected ? (
@@ -97,7 +104,7 @@ function PharmacyDashboard({ onOpenApp }) {
     <div className="page page--full">
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--brand-ink)', marginBottom: 10 }}>
-          Atrium Compounding · Admin Portal
+          Athena Compounding · Admin Portal
         </div>
         <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontSize: 30, letterSpacing: '-0.02em', margin: '0 0 8px' }}>
           Provider Applications
@@ -483,7 +490,7 @@ function SectionDataDisplay({ sectionId, appData }) {
       const p = appData.patient_data || {};
       return [
         { k: 'Active patient panel',       v: p.avgPatients || '—' },
-        { k: 'Est. monthly Rx to Atrium',  v: p.monthlyRx != null ? String(p.monthlyRx) : '—' },
+        { k: 'Est. monthly Rx to Athena',  v: p.monthlyRx != null ? String(p.monthlyRx) : '—' },
         { k: '% Rush orders',              v: p.rushPercent != null ? `${p.rushPercent}%` : '—' },
         { k: '% Cash pay',                 v: p.cashPay != null ? `${p.cashPay}%` : '—' },
         { k: '% Insurance',                v: p.insurancePay != null ? `${p.insurancePay}%` : '—' },

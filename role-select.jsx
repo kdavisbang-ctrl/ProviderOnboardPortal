@@ -15,11 +15,16 @@ function RoleSelectScreen({ user, onRole }) {
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--bg)' }}>
       <div style={{ width: 580, padding: '0 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 44, fontFamily: 'var(--serif)', fontSize: 19, fontWeight: 500 }}>
-          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--brand)', position: 'relative', flexShrink: 0 }}>
-            <span style={{ position: 'absolute', inset: 6, borderRadius: '50%', border: '1.5px solid white', display: 'block' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 44, color: 'var(--brand)' }}>
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M5 26 L13 7 L16 13.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M27 7 L19 26" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M8.5 19.5 L18.5 19.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+            <path d="M26 9.5 C29.5 9.5 31 12 31 15.5 C31 19 29.5 22 26 22.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none"/>
+          </svg>
+          <div style={{ fontFamily: 'var(--sans)', fontSize: 17, fontWeight: 600, letterSpacing: '0.01em', color: 'var(--brand)' }}>
+            ATHENA <span style={{ fontWeight: 400, color: 'var(--ink-3)', letterSpacing: '0.12em', fontSize: 12 }}>COMPOUNDING</span>
           </div>
-          Atrium
         </div>
 
         <div style={{ fontFamily: 'var(--serif)', fontSize: 30, fontWeight: 400, letterSpacing: '-0.02em', marginBottom: 10 }}>
@@ -35,14 +40,14 @@ function RoleSelectScreen({ user, onRole }) {
           <RoleCard
             title="Provider"
             sub="I prescribe medications"
-            desc="Complete your credentialing to start prescribing compounded medications through Atrium Compounding."
+            desc="Complete your credentialing to start prescribing compounded medications through Athena Compounding."
             icon={<ProviderIcon />}
             onClick={() => choose('provider')}
             disabled={loading}
           />
           <RoleCard
             title="Pharmacy Staff"
-            sub="I work at Atrium"
+            sub="I work at Athena"
             desc="Review and approve provider applications, manage credentialing, and monitor active provider accounts."
             icon={<PharmacyIcon />}
             onClick={() => choose('pharmacy')}
@@ -51,7 +56,7 @@ function RoleSelectScreen({ user, onRole }) {
         </div>
 
         <p style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 24, textAlign: 'center' }}>
-          Signed in as {user.email} ·{' '}
+          Athena Compounding · Signed in as {user.email} ·{' '}
           <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => window.sb.auth.signOut()}>Sign out</span>
         </p>
       </div>

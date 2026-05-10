@@ -1,29 +1,29 @@
 /* ─────────────────────────────────────────────
-   Atrium Compounding — Provider Onboarding
+   Athena Compounding — Provider Onboarding
    Design tokens + base styles
    ───────────────────────────────────────────── */
 
 :root {
   /* Surface */
-  --bg: #f6f4ee;
-  --bg-2: #efece4;
+  --bg: #f5f7f9;
+  --bg-2: #edf1f5;
   --panel: #ffffff;
-  --panel-2: #fbfaf6;
-  --line: #e6e2d6;
-  --line-2: #d8d3c2;
+  --panel-2: #f8fafc;
+  --line: #e2e8ee;
+  --line-2: #ccd5de;
 
   /* Text */
-  --ink: #161616;
-  --ink-2: #3d3c39;
-  --ink-3: #6e6c66;
-  --ink-4: #9c9991;
+  --ink: #161a1f;
+  --ink-2: #3a4149;
+  --ink-3: #6b737d;
+  --ink-4: #99a3ad;
 
-  /* Brand — deep teal, clinical but warm */
-  --brand: oklch(42% 0.07 195);
-  --brand-2: oklch(48% 0.075 195);
-  --brand-soft: oklch(94% 0.02 195);
-  --brand-line: oklch(85% 0.03 195);
-  --brand-ink: oklch(28% 0.05 195);
+  /* Brand — Athena Compounding steel blue */
+  --brand: #4e7d9e;
+  --brand-2: #3d6b8a;
+  --brand-soft: #eaf1f6;
+  --brand-line: #b5cfe0;
+  --brand-ink: #2b5572;
 
   /* States */
   --ok: oklch(50% 0.09 150);
@@ -95,24 +95,18 @@ a { color: var(--brand); text-decoration: none; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  gap: 8px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--brand);
 }
 .brand .mark {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: var(--brand);
-  position: relative;
-}
-.brand .mark::after {
-  content: "";
-  position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  border: 1.5px solid var(--bg);
+  display: flex;
+  align-items: center;
+  color: var(--brand);
+  flex-shrink: 0;
 }
 
 .topbar .crumb {
