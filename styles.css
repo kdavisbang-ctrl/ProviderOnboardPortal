@@ -1118,3 +1118,125 @@ a { color: var(--brand); text-decoration: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 .fade-up { animation: fadeUp 240ms ease-out both; }
+
+/* ─── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+
+  /* Topbar */
+  .topbar { padding: 0 16px; gap: 10px; }
+  .topbar .crumb { display: none; }
+  .topbar-help { display: none; }
+  .savestate { display: none; }
+  .account > span { display: none; }
+
+  /* Page */
+  .page { padding: 20px 16px 80px; }
+
+  /* Hero */
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .hero h1 { font-size: 24px; }
+  .hero::before { display: none; }
+  .hero-progress .breakdown { display: none; }
+  .hero-progress { padding: 14px 16px; }
+  .hero-progress .ratio { font-size: 30px; }
+
+  /* Section head / filter */
+  .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .section-head .filter { width: 100%; justify-content: space-between; }
+  .section-head .filter button { flex: 1; text-align: center; }
+
+  /* Tasks */
+  .tasks { grid-template-columns: 1fr; }
+  .task { grid-template-columns: 28px 1fr auto; gap: 10px; padding: 14px 16px; }
+
+  /* Section detail */
+  .detail { grid-template-columns: 1fr; gap: 0; }
+  .sidenav { display: none; }
+  .detail-main { border-radius: var(--r-3); padding: 20px 16px 24px; }
+  .detail-head h1 { font-size: 22px; }
+
+  /* Actions footer */
+  .actions { flex-wrap: wrap; gap: 8px; }
+  .actions .spacer { display: none; }
+  .actions .btn { flex: 1; justify-content: center; min-width: 0; }
+
+  /* Form rows — all collapse to single column */
+  .row-2, .row-3, .row-12 { grid-template-columns: 1fr; }
+
+  /* License rows */
+  .lic-row {
+    grid-template-columns: 70px 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .lic-row .lic-exp { grid-column: 2; }
+  .lic-row button.del { grid-column: 3; grid-row: 1; }
+
+  /* Staff table */
+  .staff-table .th { display: none; }
+  .staff-table .td {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    padding: 12px 14px;
+    gap: 6px;
+  }
+  .staff-table .td .name { grid-column: 1 / -1; }
+
+  /* Verify card */
+  .verify-card { grid-template-columns: 32px 1fr; }
+  .verify-card > .btn { display: none; }
+
+  /* Summary grid */
+  .summary-grid { grid-template-columns: 1fr; }
+
+  /* Pharmacy stat cards */
+  .pharm-stats { grid-template-columns: 1fr 1fr !important; }
+
+  /* Pharmacy table → card list */
+  .pharm-row-head { display: none !important; }
+  .pharm-row {
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 4px 10px !important;
+    padding: 14px 16px !important;
+  }
+  .pharm-row .pharm-name { grid-column: 1; grid-row: 1; font-weight: 600; }
+  .pharm-row .pharm-status { grid-column: 2; grid-row: 1; }
+  .pharm-row .pharm-sub { grid-column: 1 / -1; grid-row: 2; font-size: 12px; color: var(--ink-3); }
+  .pharm-row .pharm-date { grid-column: 1; grid-row: 3; font-size: 11px; color: var(--ink-4); }
+  .pharm-row .pharm-action { grid-column: 2; grid-row: 3; }
+
+  /* Pharmacy header */
+  .pharm-header { flex-direction: column !important; gap: 16px !important; }
+  .pharm-staff-note { min-width: 0 !important; width: 100% !important; }
+
+  /* Pharmacy review panel */
+  .pharm-review-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  /* Brand — hide full name, keep just the logo mark */
+  .brand-name { display: none; }
+
+  /* Hero */
+  .hero h1 { font-size: 21px; }
+  .hero .meta { flex-direction: column; gap: 4px; }
+  .hero .meta .pip { display: none; }
+
+  /* Tasks */
+  .task { grid-template-columns: 24px 1fr; }
+  .task .right-col { display: none; }
+
+  /* Topbar actions */
+  .topbar .right { gap: 8px; }
+
+  /* Pharmacy stats */
+  .pharm-stats { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .pharm-stats > div { padding: 12px 14px !important; }
+  .pharm-stats > div > div:first-child { font-size: 24px !important; }
+}
+

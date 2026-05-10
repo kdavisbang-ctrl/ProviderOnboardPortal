@@ -259,7 +259,7 @@ function App() {
       <header className="topbar">
         <div className="brand">
           <div className="mark"><AthenaLogo size={28} /></div>
-          <span>Athena Compounding</span>
+          <span className="brand-name">Athena Compounding</span>
         </div>
         <div className="crumb">
           {route === 'hub' ? (
@@ -278,7 +278,7 @@ function App() {
               ? <><span className="spin" style={{ width: 9, height: 9, borderWidth: 1.5, color: 'var(--ink-3)' }} />Saving…</>
               : <><span className="dot" />Saved · {savedLabel}</>}
           </div>
-          <button className="btn btn--ghost btn--sm">Need help?</button>
+          <button className="btn btn--ghost btn--sm topbar-help">Need help?</button>
           <div className="account">
             <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.email}

@@ -102,7 +102,7 @@ function PharmacyDashboard({ onOpenApp }) {
 
   return (
     <div className="page page--full">
-      <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24 }}>
+      <div className="pharm-header" style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24 }}>
         <div>
           <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--brand-ink)', marginBottom: 10 }}>
             Athena Compounding · Admin Portal
@@ -114,7 +114,7 @@ function PharmacyDashboard({ onOpenApp }) {
             Review, approve, or request changes on provider credentialing applications.
           </p>
         </div>
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 'var(--r-3)', padding: '14px 18px', minWidth: 240, flexShrink: 0 }}>
+        <div className="pharm-staff-note" style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 'var(--r-3)', padding: '14px 18px', minWidth: 240, flexShrink: 0 }}>
           <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--ink-2)' }}>Pharmacy Staff Access</div>
           <div style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 10 }}>
             Staff accounts are created by Athena administrators. Providers self-register using their NPI.
@@ -126,7 +126,7 @@ function PharmacyDashboard({ onOpenApp }) {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
+      <div className="pharm-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
         {statCards.map(s => (
           <div key={s.label} style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 'var(--r-3)', padding: '16px 18px' }}>
             <div style={{ fontSize: 30, fontFamily: 'var(--serif)', fontWeight: 400, color: s.color, lineHeight: 1, marginBottom: 4 }}>{s.value}</div>
@@ -156,7 +156,7 @@ function PharmacyDashboard({ onOpenApp }) {
 
       {/* Table */}
       <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 'var(--r-3)', overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.3fr 1fr 110px 28px', gap: 12, padding: '11px 18px', background: 'var(--panel-2)', borderBottom: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>
+        <div className="pharm-row-head" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.3fr 1fr 110px 28px', gap: 12, padding: '11px 18px', background: 'var(--panel-2)', borderBottom: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>
           <div>Provider</div><div>Practice</div><div>Submitted</div><div>Status</div><div />
         </div>
 
@@ -179,19 +179,19 @@ function PharmacyDashboard({ onOpenApp }) {
           const practice  = id.practice?.name || '—';
           const submitted = app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—';
           return (
-            <div key={app.id} onClick={() => onOpenApp(app)}
+            <div key={app.id} className="pharm-row" onClick={() => onOpenApp(app)}
               style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.3fr 1fr 110px 28px', gap: 12, padding: '14px 18px', borderTop: i > 0 ? '1px solid var(--line)' : 'none', alignItems: 'center', cursor: 'pointer', transition: 'background 100ms' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <div>
+              <div className="pharm-name">
                 <div style={{ fontWeight: 500, fontSize: 13.5 }}>{name}</div>
-                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 1 }}>{id.email || '—'}</div>
+                <div className="pharm-sub" style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 1 }}>{id.email || '—'}</div>
               </div>
               <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{practice}</div>
-              <div style={{ fontSize: 12.5, color: 'var(--ink-3)' }}>{submitted}</div>
-              <div><AppStatusBadge status={app.status} /></div>
-              <div style={{ color: 'var(--ink-4)' }}><Ic.arrow /></div>
+              <div className="pharm-date" style={{ fontSize: 12.5, color: 'var(--ink-3)' }}>{submitted}</div>
+              <div className="pharm-status"><AppStatusBadge status={app.status} /></div>
+              <div className="pharm-action" style={{ color: 'var(--ink-4)' }}><Ic.arrow /></div>
             </div>
           );
         })}
@@ -377,7 +377,7 @@ function PharmacyReview({ app, user, onBack, onAppUpdated }) {
                 )}
 
                 {/* Review decision buttons */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+                <div className="pharm-review-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
                   {[
                     { value: 'approved',          label: 'Approve',         desc: 'Section is complete and acceptable',            color: 'var(--ok)',     soft: 'var(--ok-soft)' },
                     { value: 'changes_requested',  label: 'Request changes', desc: 'Provider needs to update this section',         color: 'var(--warn)',   soft: 'var(--warn-soft)' },
