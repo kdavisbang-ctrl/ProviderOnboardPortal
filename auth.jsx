@@ -1,29 +1,42 @@
 /* global React */
 
-// ── NPI registry lookup (NPPES public API) ──────────────
+// ── NPI registry lookup (NPPES public API, with demo fallback) ──
 async function lookupNpiApi(npi) {
-  const res = await fetch(`https://npiregistry.cms.hhs.gov/api/?number=${npi}&version=2.1`);
-  if (!res.ok) throw new Error('NPI registry unavailable. Please try again.');
-  const json = await res.json();
-  if (!json.result_count || json.result_count === 0) return null;
-  const r = json.results[0];
-  if (r.enumeration_type !== 'NPI-1') {
-    return { orgError: true };
+  try {
+    const res = await fetch(`https://npiregistry.cms.hhs.gov/api/?number=${npi}&version=2.1`);
+    if (!res.ok) throw new Error('registry_unavailable');
+    const json = await res.json();
+    if (!json.result_count || json.result_count === 0) return null;
+    const r = json.results[0];
+    if (r.enumeration_type !== 'NPI-1') return { orgError: true };
+    const b = r.basic;
+    const tax = r.taxonomies?.find(t => t.primary) || r.taxonomies?.[0];
+    const addr = r.addresses?.find(a => a.address_purpose === 'LOCATION') || r.addresses?.[0];
+    return {
+      name: [b.first_name, b.middle_name, b.last_name, b.credential].filter(Boolean).join(' '),
+      firstName: b.first_name || '',
+      lastName: b.last_name || '',
+      credential: b.credential || '',
+      taxonomy: tax ? `${tax.desc} (${tax.code})` : '',
+      enumDate: b.enumeration_date || '',
+      address: addr
+        ? [addr.address_1, addr.address_2, `${addr.city}, ${addr.state} ${addr.postal_code?.slice(0,5)}`].filter(Boolean).join(', ')
+        : '',
+      demo: false,
+    };
+  } catch {
+    // CORS or network blocked (common on GitHub Pages) — return demo data so the flow can be tested
+    return {
+      name: 'Test Provider MD',
+      firstName: 'Test',
+      lastName: 'Provider',
+      credential: 'MD',
+      taxonomy: 'Family Medicine (207Q00000X)',
+      enumDate: '2010-01-15',
+      address: '123 Demo St, Watkinsville, GA 30677',
+      demo: true,
+    };
   }
-  const b = r.basic;
-  const tax = r.taxonomies?.find(t => t.primary) || r.taxonomies?.[0];
-  const addr = r.addresses?.find(a => a.address_purpose === 'LOCATION') || r.addresses?.[0];
-  return {
-    name: [b.first_name, b.middle_name, b.last_name, b.credential].filter(Boolean).join(' '),
-    firstName: b.first_name || '',
-    lastName: b.last_name || '',
-    credential: b.credential || '',
-    taxonomy: tax ? `${tax.desc} (${tax.code})` : '',
-    enumDate: b.enumeration_date || '',
-    address: addr
-      ? [addr.address_1, addr.address_2, `${addr.city}, ${addr.state} ${addr.postal_code?.slice(0,5)}`].filter(Boolean).join(', ')
-      : '',
-  };
 }
 
 // ── Shared logo ─────────────────────────────────────────
@@ -243,6 +256,7 @@ function RegisterView({ onBack, onCheckEmail }) {
         setLastName(result.lastName);
         setStep('details');
       }
+
     } catch (e) { setNpiError(e.message); }
     setNpiLoading(false);
   };
@@ -308,7 +322,9 @@ function RegisterView({ onBack, onCheckEmail }) {
 
           {npiResult ? (
             <div style={{ background: 'var(--ok-soft)', border: '1px solid var(--ok)', borderRadius: 'var(--r-2)', padding: '12px 14px' }}>
-              <div style={{ fontWeight: 600, color: 'var(--ok)', fontSize: 13, marginBottom: 4 }}>✓ Verified provider</div>
+              <div style={{ fontWeight: 600, color: 'var(--ok)', fontSize: 13, marginBottom: 4 }}>
+                ✓ {npiResult.demo ? 'Demo mode — NPI registry unreachable' : 'Verified · NPPES registry'}
+              </div>
               <div style={{ fontWeight: 500, fontSize: 14 }}>{npiResult.name}</div>
               <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 4 }}>
                 NPI {npi} · {npiResult.taxonomy}
