@@ -1,7 +1,7 @@
 /* global React, SECTIONS, StatusBadge, Ic, Badge */
 const { useMemo: _hubMemo } = React;
 
-function Hub({ data, onOpen }) {
+function Hub({ data, onOpen, onboardingId }) {
   const stats = SECTIONS.map((s) => ({
     s,
     complete: s.isComplete(data),
@@ -40,7 +40,7 @@ function Hub({ data, onOpen }) {
             <span className="pip"></span>
             <span>Last saved <b>2 minutes ago</b></span>
             <span className="pip"></span>
-            <span>Onboarding ID <b style={{ fontFamily: "var(--mono)" }}>ATR-OB-48291</b></span>
+            <span>Onboarding ID <b style={{ fontFamily: "var(--mono)" }}>{onboardingId}</b></span>
           </div>
         </div>
         <div className="hero-progress">
