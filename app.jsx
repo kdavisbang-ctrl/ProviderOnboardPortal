@@ -257,7 +257,10 @@ function App() {
     return () => clearTimeout(saveTimer.current);
   }, [data]);
 
-  const set = (key, value) => setData(d => ({ ...d, [key]: typeof value === 'function' ? value(d[key]) : value }));
+  const set = React.useCallback((key, value) => setData(d => ({
+    ...d,
+    [key]: typeof value === 'function' ? value(d[key]) : value,
+  })), []);
 
   const goHub     = () => setRoute('hub');
   const goSection = (id) => { setRoute(id); window.scrollTo({ top: 0, behavior: 'instant' }); };
