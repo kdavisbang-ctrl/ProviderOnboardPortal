@@ -48,6 +48,11 @@ function dbToData(row) {
   if (!Array.isArray(credentials.licenses)) credentials.licenses = [];
   if (!Array.isArray(credentials.deaSchedules)) credentials.deaSchedules = [];
   if (!Array.isArray(credentials.csrStates)) credentials.csrStates = [];
+  credentials.licenses = credentials.licenses.map(l => ({
+    state:   typeof l?.state   === 'string' ? l.state   : '',
+    number:  typeof l?.number  === 'string' ? l.number  : '',
+    expires: typeof l?.expires === 'string' ? l.expires : '',
+  }));
   coerceStrings(credentials, e.credentials);
   const compounding = { ...clone(e.compounding), ...(row.compounding_data || {}) };
   if (!Array.isArray(compounding.categories)) compounding.categories = [];
@@ -68,10 +73,25 @@ function dbToData(row) {
     malpractice,
     compounding,
     patient,
-    shipping:     Array.isArray(row.shipping_data) ? row.shipping_data : clone(e.shipping),
+    shipping: (Array.isArray(row.shipping_data) ? row.shipping_data : clone(e.shipping)).map(loc => ({
+      label:   typeof loc?.label   === 'string' ? loc.label   : '',
+      name:    typeof loc?.name    === 'string' ? loc.name    : '',
+      attn:    typeof loc?.attn    === 'string' ? loc.attn    : '',
+      street:  typeof loc?.street  === 'string' ? loc.street  : '',
+      city:    typeof loc?.city    === 'string' ? loc.city    : '',
+      state:   typeof loc?.state   === 'string' ? loc.state   : '',
+      zip:     typeof loc?.zip     === 'string' ? loc.zip     : '',
+      hours:   typeof loc?.hours   === 'string' ? loc.hours   : '',
+      primary: !!loc?.primary,
+    })),
     billing,
     ehr,
-    staff:        Array.isArray(row.staff_data) ? row.staff_data : clone(e.staff),
+    staff: (Array.isArray(row.staff_data) ? row.staff_data : clone(e.staff)).map(m => ({
+      name:   typeof m?.name   === 'string' ? m.name   : '',
+      role:   typeof m?.role   === 'string' ? m.role   : '',
+      email:  typeof m?.email  === 'string' ? m.email  : '',
+      access: typeof m?.access === 'string' ? m.access : 'Order entry',
+    })),
     attestations: { ...clone(e.attestations), ...(row.attestations_data || {}) },
   };
 }
@@ -133,6 +153,7 @@ function App() {
   const [sectionReviews, setSectionReviews] = React.useState({});
   const [dbReady, setDbReady]             = React.useState(false);
   const [loadError, setLoadError]         = React.useState(null);
+  const [saveError, setSaveError]         = React.useState(null);
   const [data, setData]                   = React.useState(clone(EMPTY_DATA));
   const [route, setRoute]                 = React.useState('hub');
   const [savedAt, setSavedAt]             = React.useState(Date.now());
@@ -224,9 +245,14 @@ function App() {
     setSaving(true);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      await window.sb.from('provider_onboardings').update(dataToDb(data)).eq('id', dbId);
+      const { error } = await window.sb.from('provider_onboardings').update(dataToDb(data)).eq('id', dbId);
       setSaving(false);
-      setSavedAt(Date.now());
+      if (error) {
+        setSaveError('Changes could not be saved. Please check your connection and try again.');
+      } else {
+        setSaveError(null);
+        setSavedAt(Date.now());
+      }
     }, 800);
     return () => clearTimeout(saveTimer.current);
   }, [data]);
@@ -294,6 +320,8 @@ function App() {
           <div className="savestate">
             {saving
               ? <><span className="spin" style={{ width: 9, height: 9, borderWidth: 1.5, color: 'var(--ink-3)' }} />Saving…</>
+              : saveError
+              ? <span style={{ color: 'var(--danger)', fontSize: 11.5 }} title={saveError}>⚠ Save failed</span>
               : <><span className="dot" />Saved · {savedLabel}</>}
           </div>
           <button className="btn btn--ghost btn--sm topbar-help">Need help?</button>

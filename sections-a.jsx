@@ -181,12 +181,12 @@ function CredentialsSection({ data, set }) {
           <div>
             {c.licenses.map((l, i) => (
               <div className="lic-row" key={i}>
-                <select className="select" style={{ height: 32, padding: "0 8px", fontSize: 12, border: "1px solid var(--line)" }} value={l.state} onChange={(e) => updLic(i, "state", e.target.value)}>
+                <select className="select" style={{ height: 32, padding: "0 8px", fontSize: 12, border: "1px solid var(--line)" }} value={typeof l.state === 'string' ? l.state : ''} onChange={(e) => updLic(i, "state", e.target.value)}>
                   <option value="">—</option>
                   {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
-                <input className="input" style={{ height: 32, fontSize: 12.5 }} placeholder="License #" value={l.number} onChange={(e) => updLic(i, "number", e.target.value)} />
-                <input className="input" type="date" style={{ height: 32, fontSize: 12 }} value={l.expires} onChange={(e) => updLic(i, "expires", e.target.value)} />
+                <input className="input" style={{ height: 32, fontSize: 12.5 }} placeholder="License #" value={typeof l.number === 'string' ? l.number : ''} onChange={(e) => updLic(i, "number", e.target.value)} />
+                <input className="input" type="date" style={{ height: 32, fontSize: 12 }} value={typeof l.expires === 'string' ? l.expires : ''} onChange={(e) => updLic(i, "expires", e.target.value)} />
                 <Badge kind={l.state && l.number ? "ok" : "mute"}>{l.state && l.number ? "Verified" : "Pending"}</Badge>
                 <button className="del" onClick={() => delLic(i)}><Ic.trash /></button>
               </div>
