@@ -248,7 +248,8 @@ function App() {
       const { error } = await window.sb.from('provider_onboardings').update(dataToDb(data)).eq('id', dbId);
       setSaving(false);
       if (error) {
-        setSaveError('Changes could not be saved. Please check your connection and try again.');
+        console.error('[save error]', error);
+        setSaveError(error.message || 'Save failed');
       } else {
         setSaveError(null);
         setSavedAt(Date.now());
@@ -336,7 +337,7 @@ function App() {
             {saving
               ? <><span className="spin" style={{ width: 9, height: 9, borderWidth: 1.5, color: 'var(--ink-3)' }} />Saving…</>
               : saveError
-              ? <span style={{ color: 'var(--danger)', fontSize: 11.5 }} title={saveError}>⚠ Save failed</span>
+              ? <span style={{ color: 'var(--danger)', fontSize: 11.5 }}>⚠ {saveError}</span>
               : <><span className="dot" />Saved · {savedLabel}</>}
           </div>
           <button className="btn btn--ghost btn--sm topbar-help">Need help?</button>
