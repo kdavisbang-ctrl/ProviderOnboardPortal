@@ -31,6 +31,20 @@ const SECTION_COMPS = {
 
 function clone(d) { return JSON.parse(JSON.stringify(d)); }
 
+function deepSanitize(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, val) => {
+    if (val !== null && typeof val === 'object' && typeof val.nodeType === 'number') {
+      console.error('[data-corrupt] DOM node in state at key:', key, val.tagName);
+      return undefined;
+    }
+    if (typeof val === 'function') {
+      console.error('[data-corrupt] Function in state at key:', key);
+      return undefined;
+    }
+    return val;
+  }));
+}
+
 // Coerce any field that should be a string (per template) back to '' if corrupt
 function coerceStrings(obj, template) {
   Object.keys(template).forEach(k => {
@@ -218,7 +232,7 @@ function App() {
       const cleanData = dbToData(row);
       setData(cleanData);
       // Self-heal: write sanitized data back to purge any corrupt objects stored in DB
-      await window.sb.from('provider_onboardings').update(dataToDb(cleanData)).eq('id', row.id);
+      await window.sb.from('provider_onboardings').update(deepSanitize(dataToDb(cleanData))).eq('id', row.id);
 
       // Load section reviews so provider can see pharmacy feedback
       const { data: reviews } = await window.sb
@@ -245,7 +259,7 @@ function App() {
     setSaving(true);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      const { error } = await window.sb.from('provider_onboardings').update(dataToDb(data)).eq('id', dbId);
+      const { error } = await window.sb.from('provider_onboardings').update(deepSanitize(dataToDb(data))).eq('id', dbId);
       setSaving(false);
       if (error) {
         console.error('[save error]', error);
