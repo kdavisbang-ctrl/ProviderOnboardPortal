@@ -118,8 +118,8 @@ function LoginView({ onRegister }) {
   const [showTest, setShowTest] = React.useState(false);
 
   const TEST_ACCOUNTS = [
-    { role: 'Provider',        email: 'provider@athena.test', password: 'athena2024', icon: <ProviderIcon /> },
-    { role: 'Pharmacy Staff',  email: 'pharmacy@athena.test', password: 'athena2024', icon: <PharmacyIcon /> },
+    { role: 'Provider',        email: 'provider@athena.test', password: 'AthenaTest25!', icon: <ProviderIcon /> },
+    { role: 'Pharmacy Staff',  email: 'pharmacy@athena.test', password: 'AthenaTest25!', icon: <PharmacyIcon /> },
   ];
 
   const signIn = async (em, pw) => {

@@ -273,6 +273,18 @@ function App() {
     if (updated) setAppStatus('submitted');
   };
 
+  // ── Reset provider data ────────────────────────────
+  const resetProviderData = async () => {
+    if (!dbId) return;
+    const empty = dataToDb(clone(EMPTY_DATA));
+    await window.sb.from('provider_onboardings').update({ ...empty, status: 'draft', submitted_at: null }).eq('id', dbId);
+    setData(clone(EMPTY_DATA));
+    setAppStatus('draft');
+    setSectionReviews({});
+    setRoute('hub');
+    skipFirstSave.current = true;
+  };
+
   // ── Sign out ───────────────────────────────────────
   const signOut = async () => {
     await window.sb.auth.signOut();
@@ -362,6 +374,14 @@ function App() {
           </div>
           <TweakButton label="Sign out" secondary onClick={signOut} />
         </TweakSection>
+        <TweakSection label="Data">
+          <div style={{ fontSize: 12, color: 'rgba(41,38,27,.55)', marginBottom: 8 }}>
+            Clear all onboarding data and start fresh.
+          </div>
+          <TweakButton label="Reset my data" secondary onClick={() => {
+            if (window.confirm('This will permanently clear all your onboarding data. Continue?')) resetProviderData();
+          }} />
+        </TweakSection>
       </TweaksPanel>
     </div>
   );
@@ -419,11 +439,9 @@ function SectionDetail({ sectionId, data, set, stats, onNav, onHub, appStatus })
               </div>
             </div>
           )}
-          <fieldset disabled={locked} style={{ border: 'none', padding: 0, margin: 0, minWidth: 0 }}>
-            <div style={{ pointerEvents: locked ? 'none' : undefined }}>
-              <Comp data={data} set={set} />
-            </div>
-          </fieldset>
+          <div className={locked ? 'section-locked' : ''}>
+            <Comp data={data} set={set} />
+          </div>
 
           <div className="actions">
             <button className="btn btn--ghost" onClick={onHub}>Back to overview</button>
