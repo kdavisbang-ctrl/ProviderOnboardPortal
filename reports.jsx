@@ -405,8 +405,11 @@ function PharmacyReports() {
   const [loading, setLoading]     = React.useState(true);
   const [activeReport, setActive] = React.useState(null);
 
+  const [loadError, setLoadError] = React.useState(null);
+
   React.useEffect(() => {
-    window.sb.from('provider_onboardings').select('*').then(({ data }) => {
+    window.sb.from('provider_onboardings').select('*').then(({ data, error }) => {
+      if (error) { setLoadError(error.message); setLoading(false); return; }
       setApps(data || []);
       setLoading(false);
     });
@@ -434,6 +437,10 @@ function PharmacyReports() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink-3)', fontSize: 13 }}>
           <span className="spin" style={{ width: 14, height: 14, borderWidth: 1.5, color: 'var(--ink-3)' }} />
           Loading data…
+        </div>
+      ) : loadError ? (
+        <div style={{ padding: 16, background: 'var(--danger-soft)', border: '1px solid var(--danger)', borderRadius: 'var(--r-2)', color: 'var(--danger)', fontSize: 13 }}>
+          Failed to load reports: {loadError}
         </div>
       ) : (
         <div className="reports-grid">

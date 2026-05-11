@@ -212,7 +212,8 @@ function App() {
     const { data: rows, error } = await window.sb
       .from('provider_onboardings')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
     if (error) { setLoadError(error.message); setDbReady(true); return; }
 
@@ -270,7 +271,7 @@ function App() {
       }
     }, 800);
     return () => clearTimeout(saveTimer.current);
-  }, [data]);
+  }, [data, dbId, dbReady, role]);
 
   const set = React.useCallback((key, value) => setData(d => {
     const next = typeof value === 'function' ? value(d[key]) : value;
