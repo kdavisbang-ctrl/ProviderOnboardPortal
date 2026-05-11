@@ -19,15 +19,10 @@ const Ic = {
 
 // ─── Form primitives ──────────────────────────────
 function Field({ label, hint, error, required, children }) {
-  const id = React.useId();
-  const child = (() => {
-    try { return React.cloneElement(React.Children.only(children), { id }); }
-    catch { return children; }
-  })();
   return (
     <div className="field">
-      {label && <label htmlFor={id}>{label}{required && <span className="req">*</span>}</label>}
-      {child}
+      {label && <label>{label}{required && <span className="req">*</span>}</label>}
+      {children}
       {hint && !error && <div className="hint">{hint}</div>}
       {error && <div className="err">{error}</div>}
     </div>
@@ -36,13 +31,15 @@ function Field({ label, hint, error, required, children }) {
 
 function Input({ value, onChange, mono, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
-  return <input className={"input" + (mono ? " input--mono" : "")} value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)} mono={undefined} />;
+  const { onChange: _oc, value: _v, ...cleanRest } = rest;
+  return <input className={"input" + (mono ? " input--mono" : "")} {...cleanRest} value={safeVal} onChange={(e) => onChange(e.target.value)} />;
 }
 
 function Select({ value, onChange, options, placeholder, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
+  const { onChange: _oc, value: _v, ...cleanRest } = rest;
   return (
-    <select className="select" value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)}>
+    <select className="select" {...cleanRest} value={safeVal} onChange={(e) => onChange(e.target.value)}>
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((o) => typeof o === "string" ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -51,7 +48,8 @@ function Select({ value, onChange, options, placeholder, ...rest }) {
 
 function Textarea({ value, onChange, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
-  return <textarea className="textarea" value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)} />;
+  const { onChange: _oc, value: _v, ...cleanRest } = rest;
+  return <textarea className="textarea" {...cleanRest} value={safeVal} onChange={(e) => onChange(e.target.value)} />;
 }
 
 function Chip({ on, onClick, children }) {
