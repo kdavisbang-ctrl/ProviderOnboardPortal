@@ -53,7 +53,7 @@ function IdentitySection({ data, set }) {
         <p className="sub">We'll auto-fill verified info from the NPPES registry.</p>
         <Field label="NPI Number" required hint="10-digit number issued by CMS">
           <div className="input-group">
-            <input className="input input--mono" placeholder="0000000000" maxLength={10}
+            <input id="field-npi" name="npi" className="input input--mono" placeholder="0000000000" maxLength={10}
               value={npiVal}
               onChange={e => upd('npi', e.target.value.replace(/\D/g, ''))} />
             <button onClick={lookupNpi} disabled={lookingUp || npiVal.length < 10}>

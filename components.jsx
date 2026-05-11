@@ -19,10 +19,15 @@ const Ic = {
 
 // ─── Form primitives ──────────────────────────────
 function Field({ label, hint, error, required, children }) {
+  const id = React.useId();
+  const child = (() => {
+    try { return React.cloneElement(React.Children.only(children), { id }); }
+    catch { return children; }
+  })();
   return (
     <div className="field">
-      {label && <label>{label}{required && <span className="req">*</span>}</label>}
-      {children}
+      {label && <label htmlFor={id}>{label}{required && <span className="req">*</span>}</label>}
+      {child}
       {hint && !error && <div className="hint">{hint}</div>}
       {error && <div className="err">{error}</div>}
     </div>
