@@ -132,7 +132,7 @@ window.EMPTY_DATA = {
     practice: { name: "", type: "", tin: "", website: "", yearsInPractice: "" },
   },
   credentials: { dea: "", deaExp: "", deaSchedules: [], licenses: [], boardCert: "", boardYear: "", csrStates: [] },
-  malpractice: { carrier: "", policyNumber: "", perOccurrence: "", aggregate: "", effective: "", expires: "", fileName: "", fileSize: "" },
+  malpractice: { carrier: "", policyNumber: "", perOccurrence: 0, aggregate: 0, effective: "", expires: "", fileName: "", fileSize: "" },
   compounding: { categories: [], formulations: [], bases: [], sterileNeeded: false, flavorPrefs: [], notes: "" },
   patient: { avgPatients: "", monthlyRx: "", rushPercent: "", cashPay: "", insurancePay: "", populations: [] },
   shipping: [],

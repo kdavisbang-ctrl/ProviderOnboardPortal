@@ -142,13 +142,13 @@ function CredentialsSection({ data, set }) {
   const c = { ...raw, dea: s(raw.dea), deaExp: s(raw.deaExp), boardCert: s(raw.boardCert), boardYear: s(raw.boardYear) };
   const upd = (k, v) => set("credentials", curr => ({ ...curr, [k]: v }));
 
-  const addLicense = () => upd("licenses", [...c.licenses, { state: "", number: "", expires: "" }]);
-  const updLic = (i, k, v) => {
-    const next = [...c.licenses];
+  const addLicense = () => set("credentials", curr => ({ ...curr, licenses: [...(curr.licenses || []), { state: "", number: "", expires: "" }] }));
+  const updLic = (i, k, v) => set("credentials", curr => {
+    const next = [...(curr.licenses || [])];
     next[i] = { ...next[i], [k]: v };
-    upd("licenses", next);
-  };
-  const delLic = (i) => upd("licenses", c.licenses.filter((_, ix) => ix !== i));
+    return { ...curr, licenses: next };
+  });
+  const delLic = (i) => set("credentials", curr => ({ ...curr, licenses: (curr.licenses || []).filter((_, ix) => ix !== i) }));
 
   return (
     <>
@@ -219,7 +219,7 @@ function CredentialsSection({ data, set }) {
 function MalpracticeSection({ data, set }) {
   const s = (v) => typeof v === 'string' ? v : '';
   const raw = data.malpractice;
-  const m = { ...raw, carrier: s(raw.carrier), policyNumber: s(raw.policyNumber), perOccurrence: s(raw.perOccurrence), aggregate: s(raw.aggregate), effective: s(raw.effective), expires: s(raw.expires), fileName: s(raw.fileName), fileSize: s(raw.fileSize) };
+  const m = { ...raw, carrier: s(raw.carrier), policyNumber: s(raw.policyNumber), effective: s(raw.effective), expires: s(raw.expires), fileName: s(raw.fileName), fileSize: s(raw.fileSize) };
   const upd = (k, v) => set("malpractice", curr => ({ ...curr, [k]: v }));
 
   return (

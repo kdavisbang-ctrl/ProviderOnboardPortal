@@ -323,6 +323,7 @@ function App() {
           stats={stats}
           onNav={goSection}
           onHub={goHub}
+          appStatus={appStatus}
         />
       )}
 
@@ -338,12 +339,13 @@ function App() {
   );
 }
 
-function SectionDetail({ sectionId, data, set, stats, onNav, onHub }) {
-  const idx  = SECTIONS.findIndex(s => s.id === sectionId);
-  const s    = SECTIONS[idx];
-  const Comp = SECTION_COMPS[sectionId];
-  const prev = SECTIONS[idx - 1];
-  const next = SECTIONS[idx + 1];
+function SectionDetail({ sectionId, data, set, stats, onNav, onHub, appStatus }) {
+  const idx    = SECTIONS.findIndex(s => s.id === sectionId);
+  const s      = SECTIONS[idx];
+  const Comp   = SECTION_COMPS[sectionId];
+  const prev   = SECTIONS[idx - 1];
+  const next   = SECTIONS[idx + 1];
+  const locked = appStatus === 'approved' || appStatus === 'rejected';
 
   const statusOf = ({ complete, progress }) =>
     complete ? 'complete' : progress > 0 ? 'progress' : 'notstarted';
@@ -380,7 +382,20 @@ function SectionDetail({ sectionId, data, set, stats, onNav, onHub }) {
             <p>{s.blurb}</p>
           </div>
 
-          <Comp data={data} set={set} />
+          {locked && (
+            <div className="callout" style={{ marginBottom: 24, borderColor: appStatus === 'approved' ? 'var(--ok)' : 'var(--danger)', background: appStatus === 'approved' ? 'var(--ok-soft)' : 'var(--danger-soft)' }}>
+              <div className="ic"><Ic.shield /></div>
+              <div>
+                <strong>Application {appStatus === 'approved' ? 'approved' : 'rejected'}.</strong>{' '}
+                These fields are read-only. Contact Athena Compounding to request changes.
+              </div>
+            </div>
+          )}
+          <fieldset disabled={locked} style={{ border: 'none', padding: 0, margin: 0, minWidth: 0 }}>
+            <div style={{ pointerEvents: locked ? 'none' : undefined }}>
+              <Comp data={data} set={set} />
+            </div>
+          </fieldset>
 
           <div className="actions">
             <button className="btn btn--ghost" onClick={onHub}>Back to overview</button>
