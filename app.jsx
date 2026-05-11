@@ -272,10 +272,11 @@ function App() {
     return () => clearTimeout(saveTimer.current);
   }, [data]);
 
-  const set = React.useCallback((key, value) => setData(d => ({
-    ...d,
-    [key]: typeof value === 'function' ? value(d[key]) : value,
-  })), []);
+  const set = React.useCallback((key, value) => setData(d => {
+    const next = typeof value === 'function' ? value(d[key]) : value;
+    try { JSON.stringify(next); } catch (e) { console.trace('[set] Non-serializable at:', key, e.message); }
+    return { ...d, [key]: next };
+  }), []);
 
   const goHub     = () => setRoute('hub');
   const goSection = (id) => { setRoute(id); window.scrollTo({ top: 0, behavior: 'instant' }); };

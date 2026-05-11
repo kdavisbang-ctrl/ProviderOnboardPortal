@@ -36,13 +36,13 @@ function Field({ label, hint, error, required, children }) {
 
 function Input({ value, onChange, mono, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
-  return <input className={"input" + (mono ? " input--mono" : "")} value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest} mono={undefined} />;
+  return <input className={"input" + (mono ? " input--mono" : "")} value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)} mono={undefined} />;
 }
 
 function Select({ value, onChange, options, placeholder, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
   return (
-    <select className="select" value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest}>
+    <select className="select" value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)}>
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((o) => typeof o === "string" ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -51,7 +51,7 @@ function Select({ value, onChange, options, placeholder, ...rest }) {
 
 function Textarea({ value, onChange, ...rest }) {
   const safeVal = (value == null || typeof value === 'object') ? '' : value;
-  return <textarea className="textarea" value={safeVal} onChange={(e) => onChange(e.target.value)} {...rest} />;
+  return <textarea className="textarea" value={safeVal} {...rest} onChange={(e) => onChange(e.target.value)} />;
 }
 
 function Chip({ on, onClick, children }) {
